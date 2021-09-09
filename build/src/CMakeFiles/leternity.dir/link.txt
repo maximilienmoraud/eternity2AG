@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc ../lib/libleternity.a CMakeFiles/leternity.dir/Problem.cpp.o CMakeFiles/leternity.dir/initSolution.cpp.o CMakeFiles/leternity.dir/evalSolution.cpp.o CMakeFiles/leternity.dir/Solution.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib ../lib/libleternity.a
