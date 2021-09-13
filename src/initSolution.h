@@ -21,11 +21,12 @@ class initSolution : public eoInit <Solution> {
 
   void initAleatoire(Solution& _sol);
   void initGlouton(Solution& _sol);
-	
+  void initGloutonBis(Solution &_sol);
+
  private:
 	Problem & problem;
 	unsigned int strategie;
-	
+
 };
 
 #endif 
