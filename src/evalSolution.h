@@ -9,8 +9,8 @@
 class evalSolution : public eoEvalFunc <Solution> {
 
  public :
-  evalSolution(Problem & _problem);
-  
+  explicit evalSolution(Problem & _problem);
+
   void operator()(Solution& _sol);
 	
  private:

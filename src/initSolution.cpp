@@ -396,19 +396,19 @@ void initSolution::initGloutonBis(Solution& _sol){
     std::vector<unsigned int> centresPermutation;
 
 
-
+    srand(time(0));
     for(unsigned int i=0; i<4; i++)
         coinsPermutation.push_back(i);
     std::random_shuffle(std::begin(coinsPermutation),std::end(coinsPermutation));
     //for(unsigned int i=0; i<4; i++)
     //std::cout << coinsPermutation[i] << std::endl;
-
+    srand(time(0));
     for(unsigned int i=0; i<2*(l+h-4); i++)
         bordsPermutation.push_back(i);
     std::random_shuffle(std::begin(bordsPermutation),std::end(bordsPermutation));
     //for(unsigned int i=0; i<bordsPermutation.size(); i++)
     //std::cout << bordsPermutation[i] << std::endl;
-
+    srand(time(0));
     for(unsigned int i=0; i<(h-2)*(l-2); i++)
         centresPermutation.push_back(i);
     std::random_shuffle(std::begin(centresPermutation),std::end(centresPermutation));
@@ -578,7 +578,7 @@ void initSolution::initGloutonBis(Solution& _sol){
 
     for(unsigned int i=0; i<l*h; i++){
         //on garde que les centres
-        if (i > l-1 && i < l*h-l && i%16!=0 && (i+1)%16!=0){
+        if (i > l-1 && i < l*h-l && i%l!=0 && (i+1)%l!=0){
             unsigned int correspondingSide = 0;
             unsigned int rotationNeeded = 0;
             unsigned int indexBestPiece = 0;
@@ -639,7 +639,7 @@ void initSolution::initGloutonBis(Solution& _sol){
     }
 
     //on replace les indices au bon endroit
-    /*
+/*
     for(unsigned int i=0; i<_sol.size(); i++){
         struct Piece tmp = {};
         if(_sol[i].fixe){

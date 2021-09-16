@@ -8,7 +8,7 @@
 #include <thread>
 #include <unistd.h>
 #include <crossOrderXover.h>
-
+#include "localSearch.h"
 
 #include <eo>
 
@@ -18,8 +18,11 @@ int main(int argc, char** argv){
 
     initSolution init(problem,1); //initSolution with a strategy
     evalSolution eval(problem);
+    localSearch ls(problem,0);
+
+    /*
     swapRotate mut(problem);
-    //crossOrder cross;
+    //crossOrder cross(problem);
     crossContourCentre cross(problem);
 
     eoGenerationalReplacement<Solution> genReplace;
@@ -57,7 +60,13 @@ int main(int argc, char** argv){
 
     //problem.printSol(pop.best_element());
     std::cout << pop.best_element().fitness() << std::endl;
-
+*/
+    //srand(time(0));
+    Solution s;
+    init(s);
+    eval(s);
+    std::cout << "Score: " << s.fitness() << std::endl;
+    //ls(s);
     problem.printSolinFile(s, "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");
 
     return 0;
