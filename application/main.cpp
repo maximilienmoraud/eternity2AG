@@ -9,8 +9,10 @@
 #include <unistd.h>
 #include <crossOrderXover.h>
 #include "localSearch.h"
+#include "swapLocalSearch.h"
 
 #include <eo>
+#include <random>
 
 int main(int argc, char** argv){
 	Problem problem;
@@ -20,10 +22,10 @@ int main(int argc, char** argv){
     evalSolution eval(problem);
     localSearch ls(problem,0);
 
-    /*
-    swapRotate mut(problem);
-    //crossOrder cross(problem);
-    crossContourCentre cross(problem);
+    //swapRotate mut(problem);
+    swapLocalSearch mut(problem);
+    crossOrderXover cross(problem);
+    //crossContourCentre cross(problem);
 
     eoGenerationalReplacement<Solution> genReplace;
     eoWeakElitistReplacement<Solution> replace(genReplace);
@@ -35,22 +37,27 @@ int main(int argc, char** argv){
 
     eoSelectMany<Solution> select(tournament, 1);
 
-    eoSGATransform<Solution> transform(cross, 0.3, mut, 0.5);
+    eoSGATransform<Solution> transform(cross, 0.5, mut, 0.5);
 
     eoSelectTransform<Solution> breed(select, transform);
 
     eoPop<Solution> pop;
     Solution s;
-    for(unsigned int i=0; i<100; i++){
+
+
+    srand(time(0));
+    for(unsigned int i=0; i<50; i++){
         init(s);
         eval(s);
+
+
         //problem.printSol(s);
         //std::cout << "Score: " << s.fitness() << std::endl;
         pop.push_back(s);
     }
 
 
-    eoGenContinue<Solution> genCont(100);
+    eoGenContinue<Solution> genCont(20);
 
     // eoSteadyFitContinue<Solution> genCont(1,0);
 
@@ -59,15 +66,19 @@ int main(int argc, char** argv){
     algo(pop);
 
     //problem.printSol(pop.best_element());
-    std::cout << pop.best_element().fitness() << std::endl;
-*/
-    //srand(time(0));
+    std::cout << "Best FIT : " << pop.best_element().fitness() << std::endl;
+
+
+/*
     Solution s;
     init(s);
     eval(s);
     std::cout << "Score: " << s.fitness() << std::endl;
-    //ls(s);
-    problem.printSolinFile(s, "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");
+    ls(s);
+    std::cout << "Score: " << s.fitness() << std::endl;
+    */
+    problem.printSolinFile(pop.best_element(), "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");
+
 
     return 0;
 }

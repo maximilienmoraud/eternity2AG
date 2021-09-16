@@ -2,6 +2,10 @@
 #include "initSolution.h"
 #include <time.h>
 #include <stdlib.h>
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 
 initSolution::initSolution(Problem & _problem, unsigned int _strategie): problem(_problem), strategie(_strategie){}
 
@@ -115,7 +119,13 @@ void initSolution::initAleatoire(Solution& _sol){
 	}
 }
 
+int myrandom (int i) {
+    return std::rand()%i;
+}
+
 void initSolution::initGlouton(Solution& _sol){
+
+
 	//std::cout << "Strategie Glouton" << std::endl;
 	unsigned int l=problem.taille.first;
 	unsigned int h=problem.taille.second;
@@ -125,24 +135,22 @@ void initSolution::initGlouton(Solution& _sol){
 	std::vector<unsigned int> coinsPermutation;
 	std::vector<unsigned int> bordsPermutation;
 	std::vector<unsigned int> centresPermutation;
-
-	
-
+    srand(time(0));
 	for(unsigned int i=0; i<4; i++)
 		coinsPermutation.push_back(i);
-	std::random_shuffle(std::begin(coinsPermutation),std::end(coinsPermutation));
+	std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandom);
 	//for(unsigned int i=0; i<4; i++)
 		//std::cout << coinsPermutation[i] << std::endl;
-
+    srand(time(0));
 	for(unsigned int i=0; i<2*(l+h-4); i++)
 		bordsPermutation.push_back(i);
-	std::random_shuffle(std::begin(bordsPermutation),std::end(bordsPermutation));
+	std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandom);
 	//for(unsigned int i=0; i<bordsPermutation.size(); i++)
 		//std::cout << bordsPermutation[i] << std::endl;
-
+    srand(time(0));
 	for(unsigned int i=0; i<(h-2)*(l-2); i++)
 		centresPermutation.push_back(i);
-	std::random_shuffle(std::begin(centresPermutation),std::end(centresPermutation));
+	std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandom);
 	//for(unsigned int i=0; i<(h-2)*(l-2); i++)
 		//std::cout << centresPermutation[i] << std::endl;
 

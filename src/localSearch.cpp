@@ -41,10 +41,13 @@ void localSearch::stratOne(Solution & _sol) {
 
 
     for(unsigned int i=0; i<l*h; i++) {
+        //std::cout << "i : " << i << std::endl;
         if (pcesPermutation[i] > l - 1 && pcesPermutation[i] < l * h - l && pcesPermutation[i] % l != 0 && (pcesPermutation[i] + 1) % l != 0) {
-            for(unsigned int j=0; j<l*h; j++) {
+            for(unsigned int j=i; j<l*h; j++) {
+
                 if (pcesPermutation[j] > l - 1 && pcesPermutation[j] < l * h - l && pcesPermutation[j] % l != 0 && (pcesPermutation[j] + 1) % l != 0) {
                     if (pcesPermutation[i]!=pcesPermutation[j]){
+                        eval(_sol);
                         bestFit = _sol.fitness();
                         tmp = _sol;
                         tmpPiece = tmp[pcesPermutation[i]];
@@ -61,7 +64,7 @@ void localSearch::stratOne(Solution & _sol) {
                                     bestRotationI = k;
                                     bestRotationJ = m;
                                     bestFit = tmp.fitness();
-                                    std::cout << "besFit " << bestFit << " RotationI " << bestRotationI << " RotationJ " << bestRotationJ << std::endl;
+                                    //std::cout << "besFit " << bestFit << " RotationI " << bestRotationI << " RotationJ " << bestRotationJ << std::endl;
                                 }
                             }
                         }
@@ -69,10 +72,12 @@ void localSearch::stratOne(Solution & _sol) {
                             tmp[pcesPermutation[i]].rotation = bestRotationI;
                             tmp[pcesPermutation[j]].rotation = bestRotationJ;
                             eval(tmp);
-                            std::cout << tmp.fitness() << std::endl;
+                            //std::cout << tmp.fitness() << std::endl;
                             _sol = tmp;
                             eval(_sol);
                             stratOne(_sol);
+                            i = 256;
+                            j = 256;
                         }
 
                     }
