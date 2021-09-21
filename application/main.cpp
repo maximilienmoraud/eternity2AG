@@ -10,13 +10,19 @@
 #include "swapLocalSearch.h"
 #include <eoSecondsElapsedContinue.h>
 #include <eo>
-#include <fstream>
 #include <sys/stat.h>
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
+    //prise du temps de départ pour connaitre le temps d'execution
+    clock_t tStart = clock();
+
     //init des variables du problème
     int tailleGen = 100;
+    int nbLS = 40;
+    int maxGenAG = 250;
+    int increaseObj = 5;
+    std::string user = "M.MORAUD";
 
 
     //chargement du problème
@@ -50,7 +56,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     eoSelectMany<Solution> select(tournament, 1);
 
     //init des derniers parametres
-    eoSGATransform<Solution> transform(cross, 0.05, mut, 0.5);
+    eoSGATransform<Solution> transform(cross, 0, mut, 0.5);
     eoSelectTransform<Solution> breed(select, transform);
 
     //init de la pop
@@ -73,19 +79,28 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     mkdir(buffer,0777);
     std:: string logName = folderName + "/log.log";
     std:: string mapName = folderName + "/map.txt";
+    std::string infoName = folderName + "/info.txt";
 
-    //prise du temps de départ pour connaitre le temps d'execution
-    clock_t tStart = clock();
+    //Editing log file
+    std::ofstream file;
+    file.open(infoName);
+    if (file.is_open()){
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Log file created by "<< user << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Generation size is : " << tailleGen << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Nb LS is : " << nbLS << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Maximum generation per AG : " << maxGenAG << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Trying to increase each AG : " << increaseObj << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Best fit of generation is : " << std::endl << pop.best_element().fitness() << std::endl;
+    }
 
     //boucle de déclanchement de la LS
-    int nbTour = 20;
-    for (int i = 0; i < nbTour; ++i) {
+    for (int i = 0; i < nbLS; ++i) {
 
         //init critère de continuation
-        eoGenContinue<Solution> genCont1(500);
-        eoFitContinue<Solution> genCont2(pop.best_element().fitness()+5);
+        eoGenContinue<Solution> genCont1(maxGenAG);
+        eoFitContinue<Solution> genCont2(pop.best_element().fitness()+increaseObj);
         eoCombinedContinue<Solution> genCont(genCont1,genCont2);
-        eoCheckPoint<Solution> cp(genCont);
+        eoCheckPoint<Solution> cp(genCont1);
 
         //init remplissage des logs
         eoFileMonitor fileMonitor(logName, " ", true);
@@ -98,18 +113,32 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         eoEasyEA<Solution> algo(cp, popEval, breed, genReplace);
 
         //boucle LS
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching LS ["<< i + 1 <<"] ... " << std::endl;
+        }
         for (int j = 0; j < tailleGen; ++j) {
             ls(pop[j]);
         }
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
+        }
 
         // execution de l'algo
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching AG ["<< i + 1 <<"] ... " << std::endl;
+        }
         algo(pop);
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
+        }
 
         //affichage de l'avancement
         float tmpI = i;
-        float tmpNbTour = nbTour;
+        float tmpNbTour = nbLS;
         std::cout << "Avancement ["<< ((tmpI+1)/tmpNbTour)*100 <<"%] Execution time [" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s]" << std::endl;
     }
+    //ajout du temps d'execution dans le fichier
+    file.close();
 
     //affichage de la best solution
     std::cout << "Best FIT : " << pop.best_element().fitness() << std::endl;
@@ -117,7 +146,6 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //sauvegarde de la best solution
     problem.printSolinFile(pop.best_element(), "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");
     problem.printSolinFile(pop.best_element(), mapName);
-
 
     return 0;
 }
