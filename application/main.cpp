@@ -1,91 +1,122 @@
 #include <iostream>
-#include "Piece.h"
 #include "initSolution.h"
 #include "evalSolution.h"
 #include "swapRotate.h"
 #include "crossContourCentre.h"
 #include <chrono>
 #include <thread>
-#include <unistd.h>
 #include <crossOrderXover.h>
 #include "localSearch.h"
 #include "swapLocalSearch.h"
-
+#include <eoSecondsElapsedContinue.h>
 #include <eo>
-#include <random>
+#include <fstream>
+#include <sys/stat.h>
 
-int main(int argc, char** argv){
+int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
+
+    //init des variables du problème
+    int tailleGen = 100;
+
+
+    //chargement du problème
 	Problem problem;
 	problem.load("/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/Code/benchs/benchEternity2.txt");
 
+
+    //init du problème
     initSolution init(problem,1); //initSolution with a strategy
     evalSolution eval(problem);
+
+    //init local search
     localSearch ls(problem,0);
 
-    //swapRotate mut(problem);
-    swapLocalSearch mut(problem);
+    //selection des strats d'AG
+    swapRotate mut(problem);
+        //swapLocalSearch mut(problem);
     crossOrderXover cross(problem, 2);
-    //crossContourCentre cross(problem);
+        //crossContourCentre cross(problem);
 
+    //init methode de remplacement
     eoGenerationalReplacement<Solution> genReplace;
     eoWeakElitistReplacement<Solution> replace(genReplace);
 
+    //init methode d'evaluation
     eoEvalFuncCounter<Solution> evalFunc(eval);
     eoPopLoopEval<Solution> popEval(evalFunc);
 
-    eoDetTournamentSelect<Solution> tournament(10);
-
+    //init du tournois
+    eoDetTournamentSelect<Solution> tournament(15);
     eoSelectMany<Solution> select(tournament, 1);
 
+    //init des derniers parametres
     eoSGATransform<Solution> transform(cross, 0.05, mut, 0.5);
-
     eoSelectTransform<Solution> breed(select, transform);
 
+    //init de la pop
     eoPop<Solution> pop;
     Solution s;
 
-
-    srand(time(0));
-    int tailleGen = 100;
+    //remplissage de la population
     for(unsigned int i=0; i<tailleGen; i++){
         init(s);
         eval(s);
-
-
-        //problem.printSol(s);
-        //std::cout << "Score: " << s.fitness() << std::endl;
         pop.push_back(s);
     }
 
+    // creation des fichiers de suivi
+    time_t t = time(nullptr);
+    struct tm * now = localtime( & t );
+    char buffer [80];
+    strftime (buffer,80,"../../essai/%d-%m-%Y_%H-%M-%S",now);
+    std::string folderName = buffer;
+    mkdir(buffer,0777);
+    std:: string logName = folderName + "/log.log";
+    std:: string mapName = folderName + "/map.txt";
 
-    eoGenContinue<Solution> genCont(200);
-    eoCheckPoint<Solution> cp(genCont);
-    //cp.add(bestStat);
-    eoFileMonitor fileMonitor("stats.xg", " ");
-    eoBestFitnessStat<Solution> bestStat;
-    cp.add(bestStat);
-    fileMonitor.add(bestStat);
-    cp.add(fileMonitor);
+    //prise du temps de départ pour connaitre le temps d'execution
+    clock_t tStart = clock();
 
-    // eoSteadyFitContinue<Solution> genCont(1,0);
+    //boucle de déclanchement de la LS
+    int nbTour = 20;
+    for (int i = 0; i < nbTour; ++i) {
 
-    eoEasyEA<Solution> algo(cp, popEval, breed, genReplace);
+        //init critère de continuation
+        eoGenContinue<Solution> genCont1(500);
+        eoFitContinue<Solution> genCont2(pop.best_element().fitness()+5);
+        eoCombinedContinue<Solution> genCont(genCont1,genCont2);
+        eoCheckPoint<Solution> cp(genCont);
 
-    algo(pop);
+        //init remplissage des logs
+        eoFileMonitor fileMonitor(logName, " ", true);
+        eoBestFitnessStat<Solution> bestStat;
+        cp.add(bestStat);
+        fileMonitor.add(bestStat);
+        cp.add(fileMonitor);
 
-    //problem.printSol(pop.best_element());
+        //init algo
+        eoEasyEA<Solution> algo(cp, popEval, breed, genReplace);
+
+        //boucle LS
+        for (int j = 0; j < tailleGen; ++j) {
+            ls(pop[j]);
+        }
+
+        // execution de l'algo
+        algo(pop);
+
+        //affichage de l'avancement
+        float tmpI = i;
+        float tmpNbTour = nbTour;
+        std::cout << "Avancement ["<< ((tmpI+1)/tmpNbTour)*100 <<"%] Execution time [" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s]" << std::endl;
+    }
+
+    //affichage de la best solution
     std::cout << "Best FIT : " << pop.best_element().fitness() << std::endl;
 
-
-/*
-    Solution s;
-    init(s);
-    eval(s);
-    std::cout << "Score: " << s.fitness() << std::endl;
-    ls(s);
-    std::cout << "Score: " << s.fitness() << std::endl;
-    */
+    //sauvegarde de la best solution
     problem.printSolinFile(pop.best_element(), "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");
+    problem.printSolinFile(pop.best_element(), mapName);
 
 
     return 0;
