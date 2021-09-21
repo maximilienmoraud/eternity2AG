@@ -24,7 +24,7 @@ int main(int argc, char** argv){
 
     //swapRotate mut(problem);
     swapLocalSearch mut(problem);
-    crossOrderXover cross(problem);
+    crossOrderXover cross(problem, 2);
     //crossContourCentre cross(problem);
 
     eoGenerationalReplacement<Solution> genReplace;
@@ -33,11 +33,11 @@ int main(int argc, char** argv){
     eoEvalFuncCounter<Solution> evalFunc(eval);
     eoPopLoopEval<Solution> popEval(evalFunc);
 
-    eoDetTournamentSelect<Solution> tournament(15);
+    eoDetTournamentSelect<Solution> tournament(10);
 
     eoSelectMany<Solution> select(tournament, 1);
 
-    eoSGATransform<Solution> transform(cross, 0.5, mut, 0.5);
+    eoSGATransform<Solution> transform(cross, 0.05, mut, 0.5);
 
     eoSelectTransform<Solution> breed(select, transform);
 
@@ -46,7 +46,8 @@ int main(int argc, char** argv){
 
 
     srand(time(0));
-    for(unsigned int i=0; i<50; i++){
+    int tailleGen = 100;
+    for(unsigned int i=0; i<tailleGen; i++){
         init(s);
         eval(s);
 
@@ -57,11 +58,18 @@ int main(int argc, char** argv){
     }
 
 
-    eoGenContinue<Solution> genCont(20);
+    eoGenContinue<Solution> genCont(200);
+    eoCheckPoint<Solution> cp(genCont);
+    //cp.add(bestStat);
+    eoFileMonitor fileMonitor("stats.xg", " ");
+    eoBestFitnessStat<Solution> bestStat;
+    cp.add(bestStat);
+    fileMonitor.add(bestStat);
+    cp.add(fileMonitor);
 
     // eoSteadyFitContinue<Solution> genCont(1,0);
 
-    eoEasyEA<Solution> algo(genCont, popEval, breed, genReplace);
+    eoEasyEA<Solution> algo(cp, popEval, breed, genReplace);
 
     algo(pop);
 

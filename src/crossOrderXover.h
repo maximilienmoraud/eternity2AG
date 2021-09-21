@@ -7,13 +7,11 @@ class crossOrderXover: public eoQuadOp<Solution>
 {
 public:
 
-    crossOrderXover(Problem& _problem):problem(_problem){}
+    crossOrderXover(Problem& _problem, int _nbLigne):problem(_problem),nbLigne(_nbLigne){}
 
     bool operator()(Solution& _sol1, Solution& _sol2){
         unsigned int l=problem.taille.first;
         unsigned int h=problem.taille.second;
-
-        int nbLigne = 3;
 
         bool check = true;
 
@@ -112,4 +110,5 @@ public:
 
 private:
     Problem& problem;
+    int nbLigne;
 };
