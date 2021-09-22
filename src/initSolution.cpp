@@ -409,21 +409,21 @@ void initSolution::initGloutonBis(Solution& _sol){
 
     do {
         srand(time(0));
-        for (unsigned int i = 0; i < 4; i++)
+        for(unsigned int i=0; i<4; i++)
             coinsPermutation.push_back(i);
-        std::random_shuffle((coinsPermutation.begin()), (coinsPermutation.end()));
+        std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandom);
         //for(unsigned int i=0; i<4; i++)
         //std::cout << coinsPermutation[i] << std::endl;
         srand(time(0));
-        for (unsigned int i = 0; i < 2 * (l + h - 4); i++)
+        for(unsigned int i=0; i<2*(l+h-4); i++)
             bordsPermutation.push_back(i);
-        std::random_shuffle((bordsPermutation.begin()), (bordsPermutation.end()));
+        std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandom);
         //for(unsigned int i=0; i<bordsPermutation.size(); i++)
         //std::cout << bordsPermutation[i] << std::endl;
         srand(time(0));
-        for (unsigned int i = 0; i < (h - 2) * (l - 2); i++)
+        for(unsigned int i=0; i<(h-2)*(l-2); i++)
             centresPermutation.push_back(i);
-        std::random_shuffle((centresPermutation.begin()), (centresPermutation.end()));
+        std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandom);
         //for(unsigned int i=0; i<(h-2)*(l-2); i++)
         //std::cout << centresPermutation[i] << std::endl;
 
@@ -432,124 +432,171 @@ void initSolution::initGloutonBis(Solution& _sol){
         for (unsigned int i = 0; i < (2 * (l + h - 2)); i++) {
 
             //on affecte le coin n°1
-            if (i == 0) { //placer le 1er coin
-                _sol[i] = problem.coins[coinsPermutation[0]];
-                _sol[i].rotation = 1;
-                _sol[i].position = i;
+            if(i==0){
+                _sol[i]=problem.coins[coinsPermutation[0]];
+                _sol[i].rotation=1;
+                _sol[i].position=i;
                 coinsPermutation.erase(coinsPermutation.begin());
                 lastColor = _sol[i].couleur[2];
             }
             //on affecte le bord n°1
-            if (i > 0 && i < l - 1) {
+            if(i > 0 && i<l-1){
                 for (int b = 0; b < bordsPermutation.size(); ++b) {
-                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor) {  //on test si une pièce peut matcher dans la liste et on la place
+                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor){
                         //std::cout << problem.bords[bordsPermutation[b]].couleur[0] << " " << problem.bords[bordsPermutation[b]].couleur[1] << " " << problem.bords[bordsPermutation[b]].couleur[2] << " " << problem.bords[bordsPermutation[b]].couleur[3] << " "  << std::endl;
-                        _sol[i] = problem.bords[bordsPermutation[b]];
-                        _sol[i].rotation = 2;
-                        _sol[i].position = i;
-                        bordsPermutation.erase(bordsPermutation.begin() + b);
+                        _sol[i]=problem.bords[bordsPermutation[b]];
+                        _sol[i].rotation=2;
+                        _sol[i].position=i;
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
                         lastColor = _sol[i].couleur[1];
                         break;
-
+                    }
+                    if (b == bordsPermutation.size() - 1){
+                        _sol[i]=problem.bords[bordsPermutation[b]];
+                        _sol[i].rotation=2;
+                        _sol[i].position=i;
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[i].couleur[1];
                     }
                 }
 
             }
             //on affecte le coin n°2
-            if (i == l - 1 && contour_ok == l+2*h-3) {
+            if(i==l-1){
                 for (int c = 0; c < coinsPermutation.size(); ++c) {
-                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor) {
-                        _sol[i] = problem.coins[coinsPermutation[c]];
-                        _sol[i].rotation = 2;
-                        _sol[i].position = i;
-                        coinsPermutation.erase(coinsPermutation.begin() + c);
+                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor){
+                        _sol[i]=problem.coins[coinsPermutation[c]];
+                        _sol[i].rotation=2;
+                        _sol[i].position=i;
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
                         lastColor = _sol[i].couleur[2];
                         break;
+                    }
+                    if (c == coinsPermutation.size() - 1){
+                        _sol[i]=problem.coins[coinsPermutation[c]];
+                        _sol[i].rotation=2;
+                        _sol[i].position=i;
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
+                        lastColor = _sol[i].couleur[2];
                     }
                 }
             }
 
             //on affecte le bord n°2
-            if (contour_ok <= l+2*(h-2) && i > l - 1 && i < l + (h - 2)) {
+            if(i > l-1 && i < l+(h-2)){
                 for (int b = 0; b < bordsPermutation.size(); ++b) {
-                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor) {
-                        _sol[(i - l + 2) * l - 1] = problem.bords[bordsPermutation[b]];
-                        _sol[(i - l + 2) * l - 1].rotation = 3;
-                        _sol[(i - l + 2) * l - 1].position = (i - l + 2) * l - 1;
-                        bordsPermutation.erase(bordsPermutation.begin() + b);
-                        lastColor = _sol[(i - l + 2) * l - 1].couleur[1];
+                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor){
+                        _sol[(i-l+2)*l-1]=problem.bords[bordsPermutation[b]];
+                        _sol[(i-l+2)*l-1].rotation=3;
+                        _sol[(i-l+2)*l-1].position=(i-l+2)*l-1;
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(i-l+2)*l-1].couleur[1];
                         break;
+                    }
+                    if (b == bordsPermutation.size() - 1){
+                        _sol[(i-l+2)*l-1]=problem.bords[bordsPermutation[b]];
+                        _sol[(i-l+2)*l-1].rotation=3;
+                        _sol[(i-l+2)*l-1].position=(i-l+2)*l-1;
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(i-l+2)*l-1].couleur[1];
                     }
                 }
             }
 
             //on affecte le coin n°3
-            if (contour_ok == l+h-2 && i == l + (h - 2)) {
+            if(i == l+(h-2)){
                 for (int c = 0; c < coinsPermutation.size(); ++c) {
-                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor) {
-                        _sol[(i - l + 2) * l - 1] = problem.coins[coinsPermutation[c]];
-                        _sol[(i - l + 2) * l - 1].rotation = 3;
-                        _sol[(i - l + 2) * l - 1].position = (i - l + 2) * l - 1;
-                        coinsPermutation.erase(coinsPermutation.begin() + c);
-                        lastColor = _sol[(i - l + 2) * l - 1].couleur[2];
+                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor){
+                        _sol[(i-l+2)*l-1]=problem.coins[coinsPermutation[c]];
+                        _sol[(i-l+2)*l-1].rotation=3;
+                        _sol[(i-l+2)*l-1].position=(i-l+2)*l-1;
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
+                        lastColor = _sol[(i-l+2)*l-1].couleur[2];
                         break;
+                    }
+                    if (c == coinsPermutation.size() - 1){
+                        _sol[(i-l+2)*l-1]=problem.coins[coinsPermutation[c]];
+                        _sol[(i-l+2)*l-1].rotation=3;
+                        _sol[(i-l+2)*l-1].position=(i-l+2)*l-1;
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
+                        lastColor = _sol[(i-l+2)*l-1].couleur[2];
                     }
                 }
             }
 
             //on affecte le bord n°3
-            if (contour_ok <= l+h-3 && i > l + (h - 2) && i < 2 * l + (h - 2) - 1) {
+            if(i > l+(h-2) && i < 2*l+(h-2)-1){
                 for (int b = 0; b < bordsPermutation.size(); ++b) {
-                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor) {
-                        _sol[(l * h - 1) - (i - (l + h - 2))] = problem.bords[bordsPermutation[b]];
-                        _sol[(l * h - 1) - (i - (l + h - 2))].rotation = 0;
-                        _sol[(l * h - 1) - (i - (l + h - 2))].position = (l * h - 1) - (i - (l + h - 2));
-                        bordsPermutation.erase(bordsPermutation.begin() + b);
-                        lastColor = _sol[(l * h - 1) - (i - (l + h - 2))].couleur[1];
+                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor){
+                        _sol[(l*h-1)-(i-(l+h-2))]=problem.bords[bordsPermutation[b]];
+                        _sol[(l*h-1)-(i-(l+h-2))].rotation=0;
+                        _sol[(l*h-1)-(i-(l+h-2))].position=(l*h-1)-(i-(l+h-2));
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(l*h-1)-(i-(l+h-2))].couleur[1];
                         break;
+                    }
+                    if (b == bordsPermutation.size() - 1){
+                        _sol[(l*h-1)-(i-(l+h-2))]=problem.bords[bordsPermutation[b]];
+                        _sol[(l*h-1)-(i-(l+h-2))].rotation=0;
+                        _sol[(l*h-1)-(i-(l+h-2))].position=(l*h-1)-(i-(l+h-2));
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(l*h-1)-(i-(l+h-2))].couleur[1];
                     }
                 }
             }
 
             //on affecte le coin n°4
-            if (contour_ok == h-1 && i == l + (h - 2) + l - 1) {
+            if(i == l+(h-2)+l-1){
                 for (int c = 0; c < coinsPermutation.size(); ++c) {
-                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor) {
-                        _sol[(l * h - 1) - (i - (l + h - 2))] = problem.coins[coinsPermutation[c]];
-                        _sol[(l * h - 1) - (i - (l + h - 2))].rotation = 0;
-                        _sol[(l * h - 1) - (i - (l + h - 2))].position = (l * h - 1) - (i - (l + h - 2));
-                        coinsPermutation.erase(coinsPermutation.begin() + c);
-                        lastColor = _sol[(l * h - 1) - (i - (l + h - 2))].couleur[2];
+                    if (problem.coins[coinsPermutation[c]].couleur[3] == lastColor){
+                        _sol[(l*h-1)-(i-(l+h-2))]=problem.coins[coinsPermutation[c]];
+                        _sol[(l*h-1)-(i-(l+h-2))].rotation=0;
+                        _sol[(l*h-1)-(i-(l+h-2))].position=(l*h-1)-(i-(l+h-2));
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
+                        lastColor = _sol[(l*h-1)-(i-(l+h-2))].couleur[2];
                         break;
+                    }
+                    if (c == coinsPermutation.size() - 1){
+                        _sol[(l*h-1)-(i-(l+h-2))]=problem.coins[coinsPermutation[c]];
+                        _sol[(l*h-1)-(i-(l+h-2))].rotation=0;
+                        _sol[(l*h-1)-(i-(l+h-2))].position=(l*h-1)-(i-(l+h-2));
+                        coinsPermutation.erase(coinsPermutation.begin()+c);
+                        lastColor = _sol[(l*h-1)-(i-(l+h-2))].couleur[2];
                     }
                 }
             }
             //on affecte le bord n°4
-            if (contour_ok <= h-2 && i > l + (h - 2) + l - 1) {
+            if(i > l+(h-2)+l-1){
                 for (int b = 0; b < bordsPermutation.size(); ++b) {
-                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor) {
-                        _sol[(l * h - l) - ((i - (2 * l + h - 3)) * l)] = problem.bords[bordsPermutation[b]];
-                        _sol[(l * h - l) - ((i - (2 * l + h - 3)) * l)].rotation = 1;
-                        _sol[(l * h - l) - ((i - (2 * l + h - 3)) * l)].position =
-                                (l * h - l) - ((i - (2 * l + h - 3)) * l);
-                        bordsPermutation.erase(bordsPermutation.begin() + b);
-                        lastColor = _sol[(l * h - l) - ((i - (2 * l + h - 3)) * l)].couleur[1];
+                    if (problem.bords[bordsPermutation[b]].couleur[3] == lastColor){
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)]=problem.bords[bordsPermutation[b]];
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)].rotation=1;
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)].position=(l*h-l)-((i-(2*l+h-3))*l);
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(l*h-l)-((i-(2*l+h-3))*l)].couleur[1];
                         break;
                     }
-
+                    if (b == bordsPermutation.size() - 1){
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)]=problem.bords[bordsPermutation[b]];
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)].rotation=1;
+                        _sol[(l*h-l)-((i-(2*l+h-3))*l)].position=(l*h-l)-((i-(2*l+h-3))*l);
+                        bordsPermutation.erase(bordsPermutation.begin()+b);
+                        lastColor = _sol[(l*h-l)-((i-(2*l+h-3))*l)].couleur[1];
+                    }
                 }
             }
         } //fin du for
         eval(_sol);
+        //std::cout << "FIT : " << _sol.fitness() << std::endl;
         int fitness = _sol.fitness();
-        if (fitness >= -480+(((l-2)+(h-2))*2)){
-            std::cout << "not ok regen " << _sol.fitness() << std::endl;
+        if (fitness != -(((l-1)*h+(h-1)*l)-(((l-2)+(h-2))*2))){
             _sol.clear();
         } else{
             contour_ok = false;
         }
     } while (contour_ok);
 
+    /*
     //test id all different
     std::vector<unsigned int> testID;
     for(unsigned int i=0; i<l*h; i++) {
@@ -563,6 +610,7 @@ void initSolution::initGloutonBis(Solution& _sol){
             }
             testID.push_back(_sol[i].id);
         }}
+    */
 
     //Parcourir l'ensemble des positions du tableau
     for(unsigned int i=0; i<l*h; i++){

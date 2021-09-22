@@ -17,9 +17,22 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //prise du temps de départ pour connaitre le temps d'execution
     clock_t tStart = clock();
 
+    // creation des fichiers de suivi
+    time_t t = time(nullptr);
+    struct tm * now = localtime( & t );
+    char buffer [80];
+    strftime (buffer,80,"../../essai/%d-%m-%Y_%H-%M-%S",now);
+    std::string folderName = buffer;
+    mkdir(buffer,0777);
+    std:: string logName = folderName + "/log.log";
+    std:: string mapName = folderName + "/map.txt";
+    std::string infoName = folderName + "/info.txt";
+    std::ofstream file;
+    file.open(infoName);
+
     //init des variables du problème
     int tailleGen = 100;
-    int nbLS = 40;
+    int nbLS = 30;
     int maxGenAG = 250;
     int increaseObj = 5;
     std::string user = "M.MORAUD";
@@ -31,7 +44,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
 
     //init du problème
-    initSolution init(problem,1); //initSolution with a strategy
+    initSolution init(problem,2); //initSolution with a strategy
     evalSolution eval(problem);
 
     //init local search
@@ -63,6 +76,16 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     eoPop<Solution> pop;
     Solution s;
 
+    //Editing log file
+    if (file.is_open()) {
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Log file created by "<< user << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Generation size is : " << tailleGen << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Nb LS is : " << nbLS << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Maximum generation per AG : " << maxGenAG << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Trying to increase each AG : " << increaseObj << std::endl;
+        file << "[" << (clock() - tStart) / 100000 << "ms]  " << "Lauching genereation first pop " << std::endl;
+    }
+
     //remplissage de la population
     for(unsigned int i=0; i<tailleGen; i++){
         init(s);
@@ -70,27 +93,9 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         pop.push_back(s);
     }
 
-    // creation des fichiers de suivi
-    time_t t = time(nullptr);
-    struct tm * now = localtime( & t );
-    char buffer [80];
-    strftime (buffer,80,"../../essai/%d-%m-%Y_%H-%M-%S",now);
-    std::string folderName = buffer;
-    mkdir(buffer,0777);
-    std:: string logName = folderName + "/log.log";
-    std:: string mapName = folderName + "/map.txt";
-    std::string infoName = folderName + "/info.txt";
-
     //Editing log file
-    std::ofstream file;
-    file.open(infoName);
     if (file.is_open()){
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Log file created by "<< user << std::endl;
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Generation size is : " << tailleGen << std::endl;
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Nb LS is : " << nbLS << std::endl;
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Maximum generation per AG : " << maxGenAG << std::endl;
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Trying to increase each AG : " << increaseObj << std::endl;
-        file << "[" << (clock() - tStart)/100000 << "ms]  " << "Best fit of generation is : " << std::endl << pop.best_element().fitness() << std::endl;
+        file << "[" << (clock() - tStart)/100000 << "ms]  " << "First generation created, best fit of generation is : " << std::endl << pop.best_element().fitness() << std::endl;
     }
 
     //boucle de déclanchement de la LS
