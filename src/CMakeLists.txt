@@ -13,6 +13,11 @@ SET (ETERNITY_SOURCES
 		Solution.h
 		Solution.cpp
 		Piece.h
-        crossOrderXover.h localSearch.cpp localSearch.h swapLocalSearch.h)
+        crossOrderXover.h
+		localSearch.cpp
+		localSearch.h
+		swapLocalSearch.h
+		swapGoodSquare.h
+		)
 
 ADD_LIBRARY(leternity STATIC ${ETERNITY_SOURCES})

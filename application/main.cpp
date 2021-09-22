@@ -11,6 +11,7 @@
 #include <eoSecondsElapsedContinue.h>
 #include <eo>
 #include <sys/stat.h>
+#include <swapGoodSquare.h>
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
@@ -31,10 +32,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     file.open(infoName);
 
     //init des variables du problème
-    int tailleGen = 100;
-    int nbLS = 30;
+    int tailleGen = 1;
+    int nbLS = 0;
     int maxGenAG = 250;
-    int increaseObj = 5;
+    int increaseObj = 8;
     std::string user = "M.MORAUD";
 
 
@@ -51,10 +52,11 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     localSearch ls(problem,0);
 
     //selection des strats d'AG
-    swapRotate mut(problem);
-        //swapLocalSearch mut(problem);
+    //swapRotate mut(problem);
+    //swapLocalSearch mut(problem);
+    swapGoodSquare mut(problem);
     crossOrderXover cross(problem, 2);
-        //crossContourCentre cross(problem);
+    //crossContourCentre cross(problem);
 
     //init methode de remplacement
     eoGenerationalReplacement<Solution> genReplace;
@@ -69,7 +71,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     eoSelectMany<Solution> select(tournament, 1);
 
     //init des derniers parametres
-    eoSGATransform<Solution> transform(cross, 0, mut, 0.5);
+    eoSGATransform<Solution> transform(cross, 0.25, mut, 0.5);
     eoSelectTransform<Solution> breed(select, transform);
 
     //init de la pop
@@ -87,19 +89,53 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     }
 
     //remplissage de la population
+    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] Lauching generation fist pop ... " << std::endl;
     for(unsigned int i=0; i<tailleGen; i++){
+        //affichage de l'avancement
+        int barWidth = 70;
+        std::cout << "[";
+        for (int i = 0; i < barWidth; ++i) {
+            std::cout << " ";
+        }
+        std::cout << "] " << int(0) << " %\r";
+        std::cout.flush();
+
         init(s);
         eval(s);
         pop.push_back(s);
+
+        //affichage de l'avancement
+        float tempi = i;
+        float tempTailleGen = tailleGen;
+        float progress = (tempi+1)/tempTailleGen;
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
     }
+    std::cout << std::endl;
+    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] Fist pop generated " << std::endl;
 
     //Editing log file
     if (file.is_open()){
         file << "[" << (clock() - tStart)/100000 << "ms]  " << "First generation created, best fit of generation is : " << std::endl << pop.best_element().fitness() << std::endl;
     }
-
+    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] Lauching AGxLS ... " << std::endl;
     //boucle de déclanchement de la LS
     for (int i = 0; i < nbLS; ++i) {
+        //affichage de l'avancement
+        int barWidth = 70;
+        std::cout << "[";
+        for (int i = 0; i < barWidth; ++i) {
+            std::cout << " ";
+        }
+        std::cout << "] " << int(0) << " %\r";
+        std::cout.flush();
 
         //init critère de continuation
         eoGenContinue<Solution> genCont1(maxGenAG);
@@ -122,7 +158,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching LS ["<< i + 1 <<"] ... " << std::endl;
         }
         for (int j = 0; j < tailleGen; ++j) {
-            ls(pop[j]);
+            //ls(pop[j]);
         }
         if (file.is_open()) {
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
@@ -138,15 +174,26 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         }
 
         //affichage de l'avancement
-        float tmpI = i;
-        float tmpNbTour = nbLS;
-        std::cout << "Avancement ["<< ((tmpI+1)/tmpNbTour)*100 <<"%] Execution time [" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s]" << std::endl;
+        float tempi = i;
+        float tempNbLS = nbLS;
+        float progress = (tempi+1)/tempNbLS;
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
     }
+    std::cout << std::endl;
+
     //ajout du temps d'execution dans le fichier
     file.close();
 
     //affichage de la best solution
-    std::cout << "Best FIT : " << pop.best_element().fitness() << std::endl;
+    std::cout << "AGxLS finished, best FIT : " << pop.best_element().fitness() << std::endl;
 
     //sauvegarde de la best solution
     problem.printSolinFile(pop.best_element(), "/Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ETERNITY2/sketch_190409a/positions.txt");

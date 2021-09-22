@@ -2,10 +2,14 @@
 #include "Solution.h"
 #include "Piece.h"
 #include "evalSolution.h"
-
 #include <eo>
 
+
 localSearch::localSearch(Problem & _problem, unsigned int _strategie): problem(_problem), strategie(_strategie){}
+
+int myrandomLS (int i) {
+    return std::rand()%i;
+}
 
 void localSearch::operator()(Solution & _sol){
     if(strategie==0)
@@ -37,7 +41,7 @@ void localSearch::stratOne(Solution & _sol) {
     srand(time(0));
     for(unsigned int i=0; i<(h)*(l); i++)
         pcesPermutation.push_back(i);
-    std::random_shuffle(std::begin(pcesPermutation),std::end(pcesPermutation));
+    std::random_shuffle(std::begin(pcesPermutation),std::end(pcesPermutation), myrandomLS);
 
 
     for(unsigned int i=0; i<l*h; i++) {

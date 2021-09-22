@@ -120,7 +120,7 @@ void initSolution::initAleatoire(Solution& _sol){
 	}
 }
 
-int myrandom (int i) {
+int myrandomINIT (int i) {
     return std::rand()%i;
 }
 
@@ -139,19 +139,19 @@ void initSolution::initGlouton(Solution& _sol){
     srand(time(0));
 	for(unsigned int i=0; i<4; i++)
 		coinsPermutation.push_back(i);
-	std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandom);
+	std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandomINIT);
 	//for(unsigned int i=0; i<4; i++)
 		//std::cout << coinsPermutation[i] << std::endl;
     srand(time(0));
 	for(unsigned int i=0; i<2*(l+h-4); i++)
 		bordsPermutation.push_back(i);
-	std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandom);
+	std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandomINIT);
 	//for(unsigned int i=0; i<bordsPermutation.size(); i++)
 		//std::cout << bordsPermutation[i] << std::endl;
     srand(time(0));
 	for(unsigned int i=0; i<(h-2)*(l-2); i++)
 		centresPermutation.push_back(i);
-	std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandom);
+	std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandomINIT);
 	//for(unsigned int i=0; i<(h-2)*(l-2); i++)
 		//std::cout << centresPermutation[i] << std::endl;
 
@@ -325,9 +325,8 @@ void initSolution::initGlouton(Solution& _sol){
 	        //std::cout << _sol[i-1].couleur[abs(3-_sol[i-1].rotation)] << " " << _sol[i-l].couleur[abs(0-_sol[i-l].rotation)] << " " << _sol[i+1].couleur[abs(1-_sol[i+1].rotation)] << " " << _sol[i+l].couleur[abs(2-_sol[i-l].rotation)] << " "  << std::endl;
 	        for (int c = 0; c < centresPermutation.size(); ++c) {
 
-
                 for (int j = 0; j < 4; ++j) {
-                    if (_sol[i-1].couleur[abs(3-_sol[i-1].rotation)]!=0 && _sol[i-1].couleur[abs(3-_sol[i-1].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                    if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                         if (correspondingSide < 1){
                             correspondingSide = 1;
                             if (1-j == -1){
@@ -345,7 +344,7 @@ void initSolution::initGlouton(Solution& _sol){
                         else {
                             ++j;
                         }
-                        if (_sol[i-l].couleur[abs(0-_sol[i-l].rotation)]!=0 && _sol[i-l].couleur[abs(0-_sol[i-l].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                        if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                             if (correspondingSide < 2){
                                 correspondingSide = 2;
                                 if (2-j == -1){
@@ -361,7 +360,7 @@ void initSolution::initGlouton(Solution& _sol){
                             else {
                                 ++j;
                             }
-                            if (_sol[i+1].couleur[abs(1-_sol[i+1].rotation)]!=0 && _sol[i+1].couleur[abs(1-_sol[i+1].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                                 correspondingSide = 3;
                                 rotationNeeded = 3-j;
                                 indexBestPiece = c;
@@ -377,20 +376,6 @@ void initSolution::initGlouton(Solution& _sol){
 	        centresPermutation.erase(centresPermutation.begin()+indexBestPiece);
 	    }
 	}
-
-	//on replace les indices au bon endroit
-	/*
-	for(unsigned int i=0; i<_sol.size(); i++){
-		struct Piece tmp = {};
-		if(_sol[i].fixe){
-			//std::cout << "changement en i " << i << std::endl;
-			tmp=_sol[i];
-			_sol[i]= _sol[problem.positionIndice(tmp.id)];
-			_sol[problem.positionIndice(tmp.id)]=tmp;
-			_sol[problem.positionIndice(tmp.id)].rotation=problem.rotationIndice(tmp.id);
-		}
-	}
-*/
 }
 
 void initSolution::initGloutonBis(Solution& _sol){
@@ -405,25 +390,25 @@ void initSolution::initGloutonBis(Solution& _sol){
     std::vector<unsigned int> bordsPermutation;
     std::vector<unsigned int> centresPermutation;
 
-    bool contour_ok = true;
+    bool contour = true;
 
     do {
         srand(time(0));
         for(unsigned int i=0; i<4; i++)
             coinsPermutation.push_back(i);
-        std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandom);
+        std::random_shuffle(coinsPermutation.begin(),coinsPermutation.end(),myrandomINIT);
         //for(unsigned int i=0; i<4; i++)
         //std::cout << coinsPermutation[i] << std::endl;
         srand(time(0));
         for(unsigned int i=0; i<2*(l+h-4); i++)
             bordsPermutation.push_back(i);
-        std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandom);
+        std::random_shuffle(bordsPermutation.begin(),bordsPermutation.end(),myrandomINIT);
         //for(unsigned int i=0; i<bordsPermutation.size(); i++)
         //std::cout << bordsPermutation[i] << std::endl;
         srand(time(0));
         for(unsigned int i=0; i<(h-2)*(l-2); i++)
             centresPermutation.push_back(i);
-        std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandom);
+        std::random_shuffle(centresPermutation.begin(),centresPermutation.end(),myrandomINIT);
         //for(unsigned int i=0; i<(h-2)*(l-2); i++)
         //std::cout << centresPermutation[i] << std::endl;
 
@@ -592,9 +577,9 @@ void initSolution::initGloutonBis(Solution& _sol){
         if (fitness != -(((l-1)*h+(h-1)*l)-(((l-2)+(h-2))*2))){
             _sol.clear();
         } else{
-            contour_ok = false;
+            contour = false;
         }
-    } while (contour_ok);
+    } while (contour);
 
     /*
     //test id all different
@@ -624,32 +609,29 @@ void initSolution::initGloutonBis(Solution& _sol){
             //std::cout << _sol[i-1].couleur[abs(3-_sol[i-1].rotation)] << " " << _sol[i-l].couleur[abs(0-_sol[i-l].rotation)] << " " << _sol[i+1].couleur[abs(1-_sol[i+1].rotation)] << " " << _sol[i+l].couleur[abs(2-_sol[i-l].rotation)] << " "  << std::endl;
             for (int c = 0; c < centresPermutation.size(); ++c) { //parcours des indices des centres
 
-                for (int j = 0; j < 4; ++j) { //parcours de toutes les couleurs d'une pièce
-
-                    //On verrifie que la pièce est bien au centre (pas collée à un zero) et si la couleur du centre correspond à cette pièce
-                    if (_sol[i-1].couleur[abs(3-_sol[i-1].rotation)]!=0 && _sol[i-1].couleur[abs(3-_sol[i-1].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                for (int j = 0; j < 4; ++j) {
+                    if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                         if (correspondingSide < 1){
                             correspondingSide = 1;
-                            if (1-j == -1){ //j=2
+                            if (1-j == -1){
                                 rotationNeeded = 3;
-                            }else if (1-j == -2){ //j=3
+                            }else if (1-j == -2){
                                 rotationNeeded = 2;
-                            }else{ //j = 0 ou 1
-                                rotationNeeded = 1-j;  //1 ou 0
+                            }else{
+                                rotationNeeded = 1-j;
                             }
                             indexBestPiece = c;
                         }
-                        if (j==4){ //comment c'est possible?
+                        if (j==4){
                             j=0;
                         }
                         else {
-                            ++j; // +1 à j
+                            ++j;
                         }
-                        //comparaison à la pièce du dessus si même couleur
-                        if (_sol[i-l].couleur[abs(0-_sol[i-l].rotation)]!=0 && _sol[i-l].couleur[abs(0-_sol[i-l].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                        if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                             if (correspondingSide < 2){
                                 correspondingSide = 2;
-                                if (2-j == -1){ //j=3
+                                if (2-j == -1){
                                     rotationNeeded = 3;
                                 }else{
                                     rotationNeeded = 2-j;
@@ -662,8 +644,7 @@ void initSolution::initGloutonBis(Solution& _sol){
                             else {
                                 ++j;
                             }
-                            //on regarde la pièce à la droite
-                            if (_sol[i+1].couleur[abs(1-_sol[i+1].rotation)]!=0 && _sol[i+1].couleur[abs(1-_sol[i+1].rotation)]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                                 correspondingSide = 3;
                                 rotationNeeded = 3-j;
                                 indexBestPiece = c;
