@@ -35,9 +35,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     file.open(infoName);
 
     //init des variables du problème
-    int tailleGen = 100;
-    int nbLS = 3;
-    int maxGenAG = 100000;
+    eoParser parser(argc, argv);
+    unsigned int tailleGen = parser.createParam((unsigned int)(10), "tailleGen", "Taille de la generation", 'g', "Param").value();
+    int nbLS = 1;
+    int maxGenAG = 10;
     int increaseObj = 3;
     std::string user = "M.MORAUD";
 
@@ -48,7 +49,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
 
     //init du problème
-    initSolution init(problem,3); //initSolution with a strategy
+    initSolution init(problem,1); //initSolution with a strategy
     evalSolution eval(problem);
 
     //init local search
