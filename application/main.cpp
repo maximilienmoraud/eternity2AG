@@ -36,9 +36,9 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     //init des variables du problème
     int tailleGen = 100;
-    int nbLS = 40;
-    int maxGenAG = 1000;
-    int increaseObj = 5;
+    int nbLS = 3;
+    int maxGenAG = 100000;
+    int increaseObj = 3;
     std::string user = "M.MORAUD";
 
 
@@ -48,7 +48,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
 
     //init du problème
-    initSolution init(problem,2); //initSolution with a strategy
+    initSolution init(problem,3); //initSolution with a strategy
     evalSolution eval(problem);
 
     //init local search
@@ -71,11 +71,11 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     eoPopLoopEval<Solution> popEval(evalFunc);
 
     //init du tournois
-    eoDetTournamentSelect<Solution> tournament(20);
+    eoDetTournamentSelect<Solution> tournament(15);
     eoSelectMany<Solution> select(tournament, 1);
 
     //init des derniers parametres
-    eoSGATransform<Solution> transform(cross, 0.3, mut, 0.7);
+    eoSGATransform<Solution> transform(cross, 0.3, mut, 0.4);
     eoSelectTransform<Solution> breed(select, transform);
 
     //init de la pop

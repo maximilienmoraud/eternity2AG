@@ -27,6 +27,7 @@ class initSolution : public eoInit <Solution> {
 	Problem & problem;
 	unsigned int strategie;
 
+    void initEscargot(Solution &_sol);
 };
 
 #endif 
