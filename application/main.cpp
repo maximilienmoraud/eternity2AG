@@ -21,11 +21,23 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //init taille bar de suivit
     int barWidth = 70;
 
+    //init des variables du problème
+    eoParser parser(argc, argv);
+    unsigned int tailleGen = parser.createParam((unsigned int)(10), "tailleGen", "Taille de la generation", 'g', "Param").value();
+    bool LSactive = parser.createParam((bool)(false), "LSactive", "LS actif ?", 'L', "Param").value();
+    unsigned int nbLS = parser.createParam((unsigned int)(1), "nombreLS", "Nombre de Local Search", 'l', "Param").value();
+    unsigned int maxGenAG = parser.createParam((unsigned int)(100), "maxGenAG", "Nombre max d'AG", 'M', "Param").value();
+    unsigned int increaseObj = parser.createParam((unsigned int)(5), "increaseObj", "Nombre Objectif de gain fitness par AG", 'O', "Param").value();
+    unsigned int strategieInit = parser.createParam((unsigned int)(2), "strategieInit", "Strategie initialisation", 'I', "Param").value();
+    unsigned int nbLigneMut = parser.createParam((unsigned int)(3), "nbLigneMut", "Nombre de ligne affecté par la mutation", 'M', "Param").value();
+    float tauxCross = parser.createParam((float)(0.5), "tauxCross", "Taux de cross", 'm', "Param").value();
+    float tauxSwap = parser.createParam((float)(0.5), "tauxSwap", "Taux de swap", 's', "Param").value();
+    std::string user = "M.MORAUD & A.WATERS";
+
     // creation des fichiers de suivi
-    time_t t = time(nullptr);
-    struct tm * now = localtime( & t );
+    std::string temp = "../../essai/" + std::to_string(tailleGen) + "_" + std::to_string(tailleGen) + "_" + std::to_string(LSactive) + "_" + std::to_string(nbLS) + "_" + std::to_string(maxGenAG) + "_" + std::to_string(strategieInit) + "_" + std::to_string(nbLigneMut) + "_" + std::to_string(tauxCross) + "_" + std::to_string(tauxSwap);
     char buffer [80];
-    strftime (buffer,80,"../../essai/%d-%m-%Y_%H-%M-%S",now);
+    strcpy(buffer, temp.c_str());
     std::string folderName = buffer;
     mkdir(buffer,0777);
     std:: string logName = folderName + "/log.log";
@@ -34,22 +46,13 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     std::ofstream file;
     file.open(infoName);
 
-    //init des variables du problème
-    eoParser parser(argc, argv);
-    unsigned int tailleGen = parser.createParam((unsigned int)(10), "tailleGen", "Taille de la generation", 'g', "Param").value();
-    int nbLS = 1;
-    int maxGenAG = 10;
-    int increaseObj = 3;
-    std::string user = "M.MORAUD";
-
-
     //chargement du problème
 	Problem problem;
 	problem.load("../../benchs/benchEternity2.txt");
 
 
     //init du problème
-    initSolution init(problem,1); //initSolution with a strategy
+    initSolution init(problem,strategieInit); //initSolution with a strategy
     evalSolution eval(problem);
 
     //init local search
@@ -59,7 +62,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //swapRotate mut(problem);
     //swapLocalSearch mut(problem);
     swapGoodSquare mut(problem);
-    crossOrderXover cross(problem, 3);
+    crossOrderXover cross(problem, nbLigneMut);
     //crossContourCentre cross(problem);
 
     //init methode de remplacement
@@ -76,7 +79,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     eoSelectMany<Solution> select(tournament, 1);
 
     //init des derniers parametres
-    eoSGATransform<Solution> transform(cross, 0.3, mut, 0.4);
+    eoSGATransform<Solution> transform(cross, tauxCross, mut, tauxSwap);
     eoSelectTransform<Solution> breed(select, transform);
 
     //init de la pop
@@ -174,8 +177,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         if (file.is_open()) {
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching LS ["<< i + 1 <<"] ... " << std::endl;
         }
-        for (int j = 0; j < tailleGen; ++j) {
-            ls(pop[j]);
+        if (LSactive) {
+            for (int j = 0; j < tailleGen; ++j) {
+                ls(pop[j]);
+            }
         }
         if (file.is_open()) {
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
