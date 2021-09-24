@@ -36,9 +36,9 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     //init des variables du problème
     int tailleGen = 100;
-    int nbLS = 10;
-    int maxGenAG = 250;
-    int increaseObj = 8;
+    int nbLS = 40;
+    int maxGenAG = 1000;
+    int increaseObj = 5;
     std::string user = "M.MORAUD";
 
 
@@ -58,23 +58,24 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //swapRotate mut(problem);
     //swapLocalSearch mut(problem);
     swapGoodSquare mut(problem);
-    crossOrderXover cross(problem, 5);
+    crossOrderXover cross(problem, 3);
     //crossContourCentre cross(problem);
 
     //init methode de remplacement
     eoGenerationalReplacement<Solution> genReplace;
     eoWeakElitistReplacement<Solution> replace(genReplace);
 
+
     //init methode d'evaluation
     eoEvalFuncCounter<Solution> evalFunc(eval);
     eoPopLoopEval<Solution> popEval(evalFunc);
 
     //init du tournois
-    eoDetTournamentSelect<Solution> tournament(15);
+    eoDetTournamentSelect<Solution> tournament(20);
     eoSelectMany<Solution> select(tournament, 1);
 
     //init des derniers parametres
-    eoSGATransform<Solution> transform(cross, 0.2, mut, 0.5);
+    eoSGATransform<Solution> transform(cross, 0.3, mut, 0.7);
     eoSelectTransform<Solution> breed(select, transform);
 
     //init de la pop
@@ -120,7 +121,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     }
     std::cout << "] " << int(100.0) << " %\r";
     std::cout << std::endl;
-    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] Fist pop generated " << std::endl;
+    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] Fist pop generated, best fit of generation is : " << pop.best_element().fitness() << std::endl;
 
     //Editing log file
     if (file.is_open()){
@@ -159,6 +160,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         //init algo
         eoEasyEA<Solution> algo(cp, popEval, breed, genReplace);
 
+        // execution de l'algo
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching AG ["<< i + 1 <<"] ... " << std::endl;
+        }
+        algo(pop);
+        if (file.is_open()) {
+            file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
+        }
+
         //boucle LS
         if (file.is_open()) {
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching LS ["<< i + 1 <<"] ... " << std::endl;
@@ -170,14 +180,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
             file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
         }
 
-        // execution de l'algo
-        if (file.is_open()) {
-            file << "[" << (clock() - tStart)/100000 << "ms]  " << "Lauching AG ["<< i + 1 <<"] ... " << std::endl;
-        }
-        algo(pop);
-        if (file.is_open()) {
-            file << "[" << (clock() - tStart)/100000 << "ms]  " << "New best fit : " << std::endl << pop.best_element().fitness() << std::endl;
-        }
+
     }
     std::cout << "[";
     for (int i = 0; i < 70; ++i) {
@@ -190,7 +193,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     file.close();
 
     //affichage de la best solution
-    std::cout << "AGxLS finished, best FIT : " << pop.best_element().fitness() << std::endl;
+    std::cout << "[" << ((clock() - tStart)/CLOCKS_PER_SEC) <<"s] AGxLS finished, best FIT : " << pop.best_element().fitness() << std::endl;
 
     //sauvegarde de la best solution
     problem.printSolinFile(pop.best_element(), "../../../sketch_190409a/positions.txt");
