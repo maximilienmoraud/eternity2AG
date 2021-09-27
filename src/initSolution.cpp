@@ -683,7 +683,6 @@ void initSolution::initEscargot(Solution& _sol){
                 unsigned int indexBestPiece = 0;
 
                 for (int c = 0; c < centresPermutation.size(); ++c) { //parcours des indices des centres
-
                     for (int j = 0; j < 4; ++j) { //parcours de toutes les couleurs d'une pièce
 
                         //On verrifie de gauche
@@ -700,16 +699,22 @@ void initSolution::initEscargot(Solution& _sol){
                                 indexBestPiece = c;
                             }
                             ++j; // +1 à j
+
                             //comparaison à la pièce du dessus
-                            if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide < 2){
                                     correspondingSide = 2;
-                                    if (2-j == -1){ //j=3
+                                    if (j == 3){ //j=3
                                         rotationNeeded = 3;
+                                    } else if(j==4){
+                                        rotationNeeded=2;
                                     }else{
                                         rotationNeeded = 2-j;
                                     }
                                     indexBestPiece = c;
+                                }
+                                if(_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==0){
+                                    break;
                                 }
                                 if (j==4){
                                     j=0;
@@ -717,12 +722,16 @@ void initSolution::initEscargot(Solution& _sol){
                                 else {
                                     ++j;
                                 }
+
                                 //on regarde la pièce à la droite
-                                if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                                if ( _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
-                                    rotationNeeded = 3-j;
+                                    rotationNeeded = 3-(j%4);
                                     indexBestPiece = c;
                                     break;
+                                }
+                                if (j==0){
+                                    j=4;
                                 }
                             }
                         }
@@ -739,7 +748,6 @@ void initSolution::initEscargot(Solution& _sol){
         }
         else if (cas==2){
             for(int i=x+l; i<= (l*h-1)-increm*(1+l) ; i=i+l){ //parcours colonne de droite
-
                 unsigned int correspondingSide = 0;
                 unsigned int rotationNeeded = 0;
                 unsigned int indexBestPiece = 0;
@@ -761,11 +769,14 @@ void initSolution::initEscargot(Solution& _sol){
                             }
                             ++j; // +1 à j
                             //comparaison à la pièce de droite
-                            if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide<2){
                                     correspondingSide=2;
-                                    rotationNeeded = 3-j;
+                                    rotationNeeded = 3-(j%4);
                                     indexBestPiece = c;
+                                }
+                                if(_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==0){
+                                    break;
                                 }
                                 if (j==4){
                                     j=0;
@@ -774,15 +785,18 @@ void initSolution::initEscargot(Solution& _sol){
                                     ++j;
                                 }
                                 //on regarde la pièce du bas
-                                if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]!=0 && _sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                                if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
-                                    if (j == 0) { //j=0
+                                    if (j == 0 ) { //j=0
                                         rotationNeeded = 0;
                                     } else { //j = 1 ou 2 ou 3
-                                        rotationNeeded = 4 - j;  //2 ou 3 ou 1
+                                        rotationNeeded = 4 - j;  //2 ou 3 ou 1 ou 4 (4-4 =0 revient bien au cas j=0)
                                     }
                                     indexBestPiece = c;
                                     break;
+                                }
+                                if (j==0){
+                                    j=4;
                                 }
                             }
                         }
@@ -818,7 +832,7 @@ void initSolution::initEscargot(Solution& _sol){
                             ++j; // +1 à j
 
                             //comparaison à la pièce de bas
-                            if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]!=0 && _sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]!=0 && _sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if(correspondingSide<2){
                                     correspondingSide = 2;
                                     if (j == 0) { //j=0
@@ -828,6 +842,9 @@ void initSolution::initEscargot(Solution& _sol){
                                     }
                                     indexBestPiece = c;
                                 }
+                                if(_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==0){
+                                    break;
+                                }
                                 if (j==4){
                                     j=0;
                                 }
@@ -836,19 +853,22 @@ void initSolution::initEscargot(Solution& _sol){
                                 }
 
                                 //on regarde la pièce de gauche
-                                if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                                if ( _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
 
-                                    if (1-j == -1){ //j=2
+                                    if (j == 2){ //j=2
                                         rotationNeeded = 3;
-                                    }else if (1-j == -2){ //j=3
+                                    }else if (j == 3){ //j=3
                                         rotationNeeded = 2;
                                     }else{ //j = 0 ou 1
-                                        rotationNeeded = 1-j;  //1 ou 0
+                                        rotationNeeded = 1-(j%4);  //1 ou 0
                                     }
                                     indexBestPiece = c;
                                     break;
 
+                                }
+                                if (j==0){
+                                    j=4;
                                 }
                             }
                         }
@@ -891,7 +911,7 @@ void initSolution::initEscargot(Solution& _sol){
                                 j++;
                             }
                             //comparaison à la pièce de gauche
-                            if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                            if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide <2){
                                     correspondingSide = 2;
                                     if (j == 2){ //j=2
@@ -899,10 +919,12 @@ void initSolution::initEscargot(Solution& _sol){
                                     }else if (j == 3){ //j=3
                                         rotationNeeded = 2;
                                     }else{ //j = 0 ou 1
-                                        rotationNeeded = 1-j;  //1 ou 0
+                                        rotationNeeded = 1-(j%4);  //1 ou 0
                                     }
                                     indexBestPiece = c;
-
+                                }
+                                if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==0){
+                                    break;
                                 }
                                 if (j==4){
                                     j=0;
@@ -912,16 +934,19 @@ void initSolution::initEscargot(Solution& _sol){
                                 }
 
                                 //on regarde la pièce du haut
-                                if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
+                                if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
-                                    if (2-j == -1){ //j=3
+                                    if (j == 3){ //j=3
                                         rotationNeeded = 3;
                                     }else{
-                                        rotationNeeded = 2-j;
+                                        rotationNeeded = 2-(j%4);
                                     }
                                     indexBestPiece = c;
                                     break;
 
+                                }
+                                if (j==0){
+                                    j=4;
                                 }
                             }
                         }
@@ -941,12 +966,12 @@ void initSolution::initEscargot(Solution& _sol){
 
     } //fin du while
 
-    /* std::vector<unsigned int> testID;
-     for(unsigned int i=0; i<l*h; i++) {
-         if (std::find(testID.begin(), testID.end(), _sol[i].id) != testID.end()){
-             std::cout << "erreur duplication" << std::endl;
-             break;
-         }
-         testID.push_back(_sol[i].id);
-     }*/
+    std::vector<unsigned int> testID;
+    for(unsigned int i=0; i<l*h; i++) {
+        if (std::find(testID.begin(), testID.end(), _sol[i].id) != testID.end()){
+            std::cout << "erreur duplication" << std::endl;
+            break;
+        }
+        testID.push_back(_sol[i].id);
+    }
 }
