@@ -14,6 +14,8 @@ int myrandomLS (int i) {
 void localSearch::operator()(Solution & _sol){
     if(strategie==0)
         stratOne(_sol);
+    else if (strategie == 1)
+        stratTwo(_sol);
     else{
         std::cout << "Strategie non disponible" << std::endl;
     }
@@ -90,4 +92,40 @@ void localSearch::stratOne(Solution & _sol) {
         }
     }
 
+}
+
+void localSearch::stratTwo(Solution & _sol) {
+
+    unsigned int l = problem.taille.first;
+    unsigned int h = problem.taille.second;
+    double bestFit; //permet de verrifier si la fitness évolue
+    int j = 0;
+
+    evalSolution eval(problem); //???
+
+    unsigned int bestRotation = 0;
+
+    _sol.resize(l * h);
+
+    for (unsigned int i = l + 1; i < h * l - 1 -l; i++) {
+
+        //on enlève les pièces qui font parti du contour
+        if (i % 16 != 0 && (i + 1) % 16 != 0) {
+            eval(_sol);
+            bestFit = _sol.fitness(); //on renseigne les paramètres initiaux avant modification
+            bestRotation = _sol[i].rotation;
+            j = 0;
+            for(j=0;j<4;j++) {
+                _sol[i].rotation = j ; //nouvelle rotation
+                eval(_sol);
+                if (bestFit < _sol.fitness()) { //retour à l'initial
+                    _sol[i].rotation = bestRotation;
+                } else if (bestFit > _sol.fitness()){ //nouveaux paramètres
+                    bestRotation = _sol[i].rotation;
+                    bestFit =_sol.fitness();
+                }
+
+            }
+        }
+    }
 }

@@ -17,6 +17,8 @@ public:
     localSearch(Problem & _problem, unsigned int _strategie);
 
     void operator()(Solution& _sol);
+
+    void stratTwo(Solution &_sol);
 };
 
 #endif

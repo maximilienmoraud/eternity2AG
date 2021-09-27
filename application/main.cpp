@@ -34,7 +34,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     //init des variables du problème
     eoParser parser(argc, argv);
-    unsigned int tailleGen = parser.createParam((unsigned int)(10), "tailleGen", "Taille de la generation", 'g', "Param").value();
+    unsigned int tailleGen = parser.createParam((unsigned int)(9), "tailleGen", "Taille de la generation", 'g', "Param").value();
     bool LSactive = parser.createParam((bool)(false), "LSactive", "LS actif ?", 'L', "Param").value();
     unsigned int nbLS = parser.createParam((unsigned int)(1), "nombreLS", "Nombre de Local Search", 'l', "Param").value();
     unsigned int maxGenAG = parser.createParam((unsigned int)(100), "maxGenAG", "Nombre max d'AG", 'M', "Param").value();
