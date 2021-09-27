@@ -2,7 +2,7 @@
 ### 0) Set your application properties
 ######################################################################################
 # check cmake version compatibility
-cmake_minimum_required(VERSION 3.20.2)
+cmake_minimum_required(VERSION 2.8)
 
 # Here define your project name
 PROJECT("eternity")

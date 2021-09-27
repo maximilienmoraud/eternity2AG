@@ -346,7 +346,9 @@ void Problem::printSol(const Solution& _sol){
 void Problem::printSolinFile(const Solution& _sol, std::string _outputFileName){
 
 	std::ofstream file;
-  file.open(_outputFileName);
+    char buffer [80];
+    strcpy(buffer, _outputFileName.c_str());
+  file.open(buffer);
 if (file.is_open())
   {
   	//std::cout << "File open" << std::endl;
