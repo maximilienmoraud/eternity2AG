@@ -29,7 +29,7 @@ ADD_DEPENDENCIES(hopla leternity)
 ######################################################################################
 
 # Only if you need to link libraries
-TARGET_LINK_LIBRARIES(hopla /Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ParadisEO-2.0/build/eo/lib/libeo.a leternity /Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ParadisEO-2.0/build/eo/lib/libeoutils.a)
+TARGET_LINK_LIBRARIES(hopla ../ParadisEO-2.0/build/eo/lib/libeo.a leternity ../ParadisEO-2.0/build/eo/lib/libeoutils.a)
 
 # TARGET_LINK_LIBRARIES(AG eoutils eo leternity)
 
