@@ -3,7 +3,7 @@
 #include "evalSolution.h"
 #include "swapRotate.h"
 #include "crossContourCentre.h"
-#include <chrono>
+//#include <chrono>
 #include <thread>
 #include <crossOrderXover.h>
 #include "localSearch.h"
@@ -40,9 +40,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     strcpy(buffer, temp.c_str());
     std::string folderName = buffer;
     mkdir(buffer,0777);
-    std:: string logName = folderName + "/log.log";
-    std:: string mapName = folderName + "/map.txt";
-    std::string infoName = folderName + "/info.txt";
+    std:: string templogName = folderName + "/log.log";
+    std:: string tempmapName = folderName + "/map.txt";
+    std::string tempinfoName = folderName + "/info.txt";
+    char logName [80];
+    strcpy(logName, templogName.c_str());
+    char mapName [80];
+    strcpy(mapName, tempmapName.c_str());
+    char infoName [80];
+    strcpy(infoName, tempinfoName.c_str());
     std::ofstream file;
     file.open(infoName);
 
