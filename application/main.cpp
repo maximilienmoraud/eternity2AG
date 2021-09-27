@@ -28,7 +28,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     unsigned int nbLS = parser.createParam((unsigned int)(1), "nombreLS", "Nombre de Local Search", 'l', "Param").value();
     unsigned int maxGenAG = parser.createParam((unsigned int)(100), "maxGenAG", "Nombre max d'AG", 'M', "Param").value();
     unsigned int increaseObj = parser.createParam((unsigned int)(5), "increaseObj", "Nombre Objectif de gain fitness par AG", 'O', "Param").value();
-    unsigned int strategieInit = parser.createParam((unsigned int)(2), "strategieInit", "Strategie initialisation", 'I', "Param").value();
+    unsigned int strategieInit = parser.createParam((unsigned int)(3), "strategieInit", "Strategie initialisation", 'I', "Param").value();
     unsigned int nbLigneMut = parser.createParam((unsigned int)(3), "nbLigneMut", "Nombre de ligne affecté par la mutation", 'M', "Param").value();
     float tauxCross = parser.createParam((float)(0.5), "tauxCross", "Taux de cross", 'm', "Param").value();
     float tauxSwap = parser.createParam((float)(0.5), "tauxSwap", "Taux de swap", 's', "Param").value();

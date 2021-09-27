@@ -24,7 +24,7 @@ ENABLE_LANGUAGE(C)
 ######################################################################################
 ### 1) Include the install configuration file where are defined the main variables
 ######################################################################################
-set(PARADISEO_ROOT /Users/maximilienmoraud/Documents/IMTLD/5a/PROJET/ParadisEO-2.0)
+set(PARADISEO_ROOT ../ParadisEO-2.0)
 
 include(CMakeBackwardCompatibilityCXX)
 
