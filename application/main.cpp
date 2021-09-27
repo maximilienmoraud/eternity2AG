@@ -3,8 +3,6 @@
 #include "evalSolution.h"
 #include "swapRotate.h"
 #include "crossContourCentre.h"
-//#include <chrono>
-#include <thread>
 #include <crossOrderXover.h>
 #include "localSearch.h"
 #include "swapLocalSearch.h"
@@ -12,6 +10,19 @@
 #include <eo>
 #include <sys/stat.h>
 #include <swapGoodSquare.h>
+
+#include <string>
+#include <sstream>
+
+template <typename T>
+std::string ToString(T val)
+{
+    std::stringstream stream;
+    stream << val;
+    return stream.str();
+}
+
+
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
@@ -35,7 +46,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     std::string user = "M.MORAUD & A.WATERS";
 
     // creation des fichiers de suivi
-    std::string temp = "../../essai/" + std::to_string(tailleGen) + "_" + std::to_string(tailleGen) + "_" + std::to_string(LSactive) + "_" + std::to_string(nbLS) + "_" + std::to_string(maxGenAG) + "_" + std::to_string(strategieInit) + "_" + std::to_string(nbLigneMut) + "_" + std::to_string(tauxCross) + "_" + std::to_string(tauxSwap);
+    std::string temp = "../../essai/" + ToString(tailleGen) + "_" + ToString(tailleGen) + "_" + ToString(LSactive) + "_" + ToString(nbLS) + "_" + ToString(maxGenAG) + "_" + ToString(strategieInit) + "_" + ToString(nbLigneMut) + "_" + ToString(tauxCross) + "_" + ToString(tauxSwap);
     char buffer [80];
     strcpy(buffer, temp.c_str());
     std::string folderName = buffer;
