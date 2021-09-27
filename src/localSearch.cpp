@@ -41,7 +41,7 @@ void localSearch::stratOne(Solution & _sol) {
     srand(time(0));
     for(unsigned int i=0; i<(h)*(l); i++)
         pcesPermutation.push_back(i);
-    std::random_shuffle(std::begin(pcesPermutation),std::end(pcesPermutation), myrandomLS);
+    std::random_shuffle(begin(pcesPermutation),end(pcesPermutation), myrandomLS);
 
 
     for(unsigned int i=0; i<l*h; i++) {
