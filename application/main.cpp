@@ -61,12 +61,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     std:: string templogName = folderName + "/log.log";
     std:: string tempmapName = folderName + "/map.txt";
     std::string tempinfoName = folderName + "/info.txt";
+    std::string tempfinalPop = folderName + "/final.txt";
     char logName [80];
     strcpy(logName, templogName.c_str());
     char mapName [80];
     strcpy(mapName, tempmapName.c_str());
     char infoName [80];
     strcpy(infoName, tempinfoName.c_str());
+    char finalPop [80];
+    strcpy(finalPop, tempfinalPop.c_str());
     std::ofstream file;
     file.open(infoName);
 
@@ -253,6 +256,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //sauvegarde de la best solution
     //problem.printSolinFile(pop.best_element(), "../../../sketch_190409a/positions.txt");
     problem.printSolinFile(pop.best_element(), mapName);
-
+    file.open(finalPop);
+    for (int j = 0; j < tailleGen; ++j) {
+        file << pop[j].fitness() << std::endl;
+    }
+    file.close();
     return 0;
 }
