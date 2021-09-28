@@ -29,8 +29,10 @@ public:
         std::vector<double> indexList1;
         std::vector<double> indexList2;
 
+        // on prend n ligne aléatoirment mais elles doivent être differentres x2
         for(unsigned int i=0; i<nbLigne; i++){
             int randomNB;
+
             do{
                 check = false;
                 randomNB = rand() % (h-2) + 1;
@@ -57,7 +59,7 @@ public:
             //std::cout << "Lignes selectionnées : " << lignesPermutation1[i] << std::endl;
             //std::cout << "Lignes selectionnées Arrvié : " << lignesPermutation2[i] << std::endl;
 
-
+            // on permute les lignes dans des puzzles temp vies
             for (int j = 1; j < l-1; ++j) {
                 //std::cout << "INDEXs selectionnés : " << j << "  IDs correspondants : " << _sol2[j].id << std::endl;
                 tmp1[lignesPermutation1[i]*l+j] = _sol2[lignesPermutation2[i]*l+j];
@@ -67,6 +69,7 @@ public:
             }
         }
 
+        //on rerempli en verifiant qu'il n'y ait pas de doublon
         for(unsigned int i=0; i<l*h; i++) {
             if (i > l - 1 && i < l * h - l && i % l != 0 && (i + 1) % l != 0) {
 

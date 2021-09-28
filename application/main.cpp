@@ -10,10 +10,9 @@
 #include <eo>
 #include <sys/stat.h>
 #include <swapGoodSquare.h>
-
 #include <string>
-#include <sstream>
 
+//fonction tostring
 template <typename T>
 std::string ToString(T val)
 {
@@ -29,7 +28,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     //prise du temps de départ pour connaitre le temps d'execution
     clock_t tStart = clock();
 
-    //init taille bar de suivit
+    //init taille bar de suivit mode DEBUG uniquement
     int barWidth = 70;
 
     //init des variables du problème
@@ -43,7 +42,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     unsigned int maxGenAG = parser.createParam((unsigned int)(100), "maxGenAG", "Nombre max d'AG", 'M', "Param").value();
     unsigned int increaseObj = parser.createParam((unsigned int)(5), "increaseObj", "Nombre Objectif de gain fitness par AG", 'O', "Param").value();
     unsigned int strategieInit = parser.createParam((unsigned int)(3), "strategieInit", "Strategie initialisation", 'I', "Param").value();
-    unsigned int nbLigneMut = parser.createParam((unsigned int)(3), "nbLigneMut", "Nombre de ligne affecté par la mutation", 'M', "Param").value();
+    unsigned int nbLigneMut = parser.createParam((unsigned int)(3), "nbLigneMut", "Nombre de ligne affecté par la mutation", 'k', "Param").value();
     float tauxCross = parser.createParam((float)(0.5), "tauxCross", "Taux de cross", 'm', "Param").value();
     float tauxSwap = parser.createParam((float)(0.5), "tauxSwap", "Taux de swap", 's', "Param").value();
     std::string user = "M.MORAUD & A.WATERS";
@@ -124,7 +123,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         file << "[" << (clock() - tStart) / 100000 << "ms]  " << "Lauching genereation first pop " << std::endl;
     }
 
-    //remplissage de la population
+
     if (Debug) {
         std::cout << "[" << ((clock() - tStart) / CLOCKS_PER_SEC) << "s] Lauching generation fist pop ... "
                   << std::endl;
@@ -146,6 +145,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
             std::cout.flush();
         }
 
+        //remplissage de la population
         init(s);
         eval(s);
         pop.push_back(s);
@@ -153,6 +153,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     }
 
+    //lancement de l'algo de LS n°2
     if (LS2active) {
         for (int j = 0; j < tailleGen; ++j) {
             ls2(pop[j]);
@@ -244,7 +245,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         std::cout << std::endl;
     }
 
-    //ajout du temps d'execution dans le fichier
+    //fermeture du fichier
     file.close();
 
     //affichage de la best solution
@@ -253,9 +254,11 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
                   << pop.best_element().fitness() << std::endl;
     }
 
-    //sauvegarde de la best solution
-    //problem.printSolinFile(pop.best_element(), "../../../sketch_190409a/positions.txt");
+
+    //sauvegarde de la meilleur solution
     problem.printSolinFile(pop.best_element(), mapName);
+
+    //enregistement des fit de la derniere generation
     file.open(finalPop);
     for (int j = 0; j < tailleGen; ++j) {
         file << pop[j].fitness() << std::endl;

@@ -7,6 +7,7 @@
 
 localSearch::localSearch(Problem & _problem, unsigned int _strategie): problem(_problem), strategie(_strategie){}
 
+//fonction random
 int myrandomLS (int i) {
     return std::rand()%i;
 }
@@ -22,6 +23,7 @@ void localSearch::operator()(Solution & _sol){
 
 }
 
+//Méthode de descente avec première amélioration
 void localSearch::stratOne(Solution & _sol) {
     unsigned int l=problem.taille.first;
     unsigned int h=problem.taille.second;
@@ -40,18 +42,22 @@ void localSearch::stratOne(Solution & _sol) {
 
     std::vector<unsigned int> pcesPermutation;
 
+    //on mix l'ordre de parcours des pieces
     srand(time(0));
     for(unsigned int i=0; i<(h)*(l); i++)
         pcesPermutation.push_back(i);
     std::random_shuffle(pcesPermutation.begin(),pcesPermutation.end(), myrandomLS);
 
-
+    // on parcours le puzzle
     for(unsigned int i=0; i<l*h; i++) {
         //std::cout << "i : " << i << std::endl;
+        //on fait en sorte de ne pas etre sur le contour
         if (pcesPermutation[i] > l - 1 && pcesPermutation[i] < l * h - l && pcesPermutation[i] % l != 0 && (pcesPermutation[i] + 1) % l != 0) {
+            // deuxieme boucle de parcours du puzzle
             for(unsigned int j=i; j<l*h; j++) {
-
+                //on fait en sorte de ne pas etre sur le contour
                 if (pcesPermutation[j] > l - 1 && pcesPermutation[j] < l * h - l && pcesPermutation[j] % l != 0 && (pcesPermutation[j] + 1) % l != 0) {
+                    //on regarde si une permutation peut être benifique
                     if (pcesPermutation[i]!=pcesPermutation[j]){
                         eval(_sol);
                         bestFit = _sol.fitness();
@@ -59,7 +65,7 @@ void localSearch::stratOne(Solution & _sol) {
                         tmpPiece = tmp[pcesPermutation[i]];
                         tmp[pcesPermutation[i]] = tmp[pcesPermutation[j]];
                         tmp[pcesPermutation[j]] = tmpPiece;
-
+                        //on teste ttoutes les rotations possible pour chaque echange
                         for (unsigned int k=0; k<4; k++){
                             for (unsigned int m=0; m<4; m++){
                                 tmp[pcesPermutation[i]].rotation = k;
@@ -74,6 +80,7 @@ void localSearch::stratOne(Solution & _sol) {
                                 }
                             }
                         }
+                        // si fitness amélioré on applique le changement + appel recursif
                         if (bestFit < _sol.fitness()){
                             tmp[pcesPermutation[i]].rotation = bestRotationI;
                             tmp[pcesPermutation[j]].rotation = bestRotationJ;
@@ -94,6 +101,7 @@ void localSearch::stratOne(Solution & _sol) {
 
 }
 
+// recherche de la meilleur rotation pour chque piece deja placé
 void localSearch::stratTwo(Solution & _sol) {
 
     unsigned int l = problem.taille.first;
@@ -110,7 +118,7 @@ void localSearch::stratTwo(Solution & _sol) {
     for (unsigned int i = l + 1; i < h * l - 1 -l; i++) {
 
         //on enlève les pièces qui font parti du contour
-        if (i % 16 != 0 && (i + 1) % 16 != 0) {
+        if (i % l != 0 && (i + 1) % l != 0) {
             eval(_sol);
             bestFit = _sol.fitness(); //on renseigne les paramètres initiaux avant modification
             bestRotation = _sol[i].rotation;

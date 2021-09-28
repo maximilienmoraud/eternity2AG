@@ -344,25 +344,22 @@ void Problem::printSol(const Solution& _sol){
 }
 
 void Problem::printSolinFile(const Solution& _sol, std::string _outputFileName){
-
+    //on cree le fichier
 	std::ofstream file;
     char buffer [80];
     strcpy(buffer, _outputFileName.c_str());
   file.open(buffer);
 if (file.is_open())
   {
-  	//std::cout << "File open" << std::endl;
+  	//on supprime le contenu (si existant)
   	file.clear();
-  }
-	else
-	{
-		std::cout << "Unable to open file" << std::endl;
-	}
-  
+  }else{
+    std::cout << "Unable to open file" << std::endl;
+    }
+
+    //on ecrit les piece ligne par ligne en fonction de leurs rotaions
   unsigned int index, c1, c2, c3, c4;
-  //std::cout << taille.first << "\t" << taille.second << std::endl;
   file << taille.first << "\t" << taille.second << std::endl;
-  //std::cout << statCouleur.size() << std::endl;
   file << statCouleur.size() << std::endl;
   for(unsigned int i=0; i<taille.first; i++){
     for(unsigned int j=0; j<taille.second; j++){
@@ -371,7 +368,6 @@ if (file.is_open())
       c2=_sol[index].couleur[(5-_sol[index].rotation)%4];
       c3=_sol[index].couleur[(4-_sol[index].rotation)%4];
       c4=_sol[index].couleur[(3-_sol[index].rotation)%4];
-      //std::cout << c1 << "\t" << c2 << "\t" << c3 << "\t" << c4 << std::endl;
       file << c1 << "\t" << c2 << "\t" << c3 << "\t" << c4 << std::endl;
     }
   }

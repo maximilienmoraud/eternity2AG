@@ -116,6 +116,7 @@ void initSolution::initAleatoire(Solution& _sol){
     }
 }
 
+//fonction random
 int myrandomINIT (int i) {
     return std::rand()%i;
 }
@@ -129,6 +130,8 @@ void initSolution::initGlouton(Solution& _sol){
     unsigned int r=0;
     unsigned int lastColor=0;
 
+
+    //on cree un mix de l'ordre de parcours des differentes pieces
     std::vector<unsigned int> coinsPermutation;
     std::vector<unsigned int> bordsPermutation;
     std::vector<unsigned int> centresPermutation;
@@ -154,6 +157,7 @@ void initSolution::initGlouton(Solution& _sol){
 
     _sol.resize(l*h);
 
+    // on construit le contour
     for(unsigned int i=0; i<(2*l+2*(h-2)); i++){
         //on affecte le coin n°1
         if(i==0){
@@ -312,15 +316,18 @@ void initSolution::initGlouton(Solution& _sol){
         //std::cout << lastColor << std::endl;
     }
 
+    //on parcours le puzzle
     for(unsigned int i=0; i<l*h; i++){
         //on garde que les centres
         if (i > l-1 && i < l*h-l && i%16!=0 && (i+1)%16!=0){
+
             unsigned int correspondingSide = 0;
             unsigned int rotationNeeded = 0;
             unsigned int indexBestPiece = 0;
-            //std::cout << _sol[i-1].couleur[abs(3-_sol[i-1].rotation)] << " " << _sol[i-l].couleur[abs(0-_sol[i-l].rotation)] << " " << _sol[i+1].couleur[abs(1-_sol[i+1].rotation)] << " " << _sol[i+l].couleur[abs(2-_sol[i-l].rotation)] << " "  << std::endl;
-            for (int c = 0; c < centresPermutation.size(); ++c) {
 
+            // pour chaque piece de centre pas encore placé
+            for (int c = 0; c < centresPermutation.size(); ++c) {
+                //on cherche si une solution est "optimale" en fonction de toutes les rotations possibles
                 for (int j = 0; j < 4; ++j) {
                     if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                         if (correspondingSide < 1){
@@ -366,6 +373,7 @@ void initSolution::initGlouton(Solution& _sol){
                     }
                 }
             }
+            //on sauvegarde la meilleure solution
             _sol[i]=problem.centres[centresPermutation[indexBestPiece]];
             _sol[i].rotation=rotationNeeded;
             _sol[i].position=i;
@@ -374,6 +382,7 @@ void initSolution::initGlouton(Solution& _sol){
     }
 }
 
+//fonction de backtracking construction du contour
 void BTtour(Solution& _sol, std::vector<unsigned int> coinsPermutation, std::vector<unsigned int> bordsPermutation, Problem problem, unsigned int lastColor=0, unsigned int i = 0){
     unsigned int l=problem.taille.first;
     unsigned int h=problem.taille.second;
@@ -521,6 +530,7 @@ void BTtour(Solution& _sol, std::vector<unsigned int> coinsPermutation, std::vec
     }
 }
 
+// meme algo que le precedent sauf que le contour est generé avec le back tracking
 void initSolution::initGloutonBis(Solution& _sol){
     //std::cout << "Strategie Glouton" << std::endl;
     unsigned int l=problem.taille.first;
@@ -634,6 +644,7 @@ void initSolution::initGloutonBis(Solution& _sol){
     }
 
 }
+
 
 void initSolution::initEscargot(Solution& _sol){
 

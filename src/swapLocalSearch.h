@@ -11,7 +11,7 @@ public:
     swapLocalSearch(Problem& _problem):problem(_problem){}
 
     bool operator()(Solution& _sol){
-
+        // fonction de swap qui appel une methode de LS
         localSearch ls(problem,0);
 
         ls(_sol);
