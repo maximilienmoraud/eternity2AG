@@ -34,9 +34,11 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     //init des variables du problème
     eoParser parser(argc, argv);
+    unsigned int run = parser.createParam((unsigned int)(1), "run", "Numero de la run", 'R', "Param").value();
     bool Debug = parser.createParam((bool)(false), "Debug", "Debug console", 'D', "Param").value();
-    unsigned int tailleGen = parser.createParam((unsigned int)(9), "tailleGen", "Taille de la generation", 'g', "Param").value();
+    unsigned int tailleGen = parser.createParam((unsigned int)(10), "tailleGen", "Taille de la generation", 'g', "Param").value();
     bool LSactive = parser.createParam((bool)(false), "LSactive", "LS actif ?", 'L', "Param").value();
+    bool LS2active = parser.createParam((bool)(false), "LS2active", "LS2 actif ?", '2', "Param").value();
     unsigned int nbLS = parser.createParam((unsigned int)(1), "nombreLS", "Nombre de Local Search", 'l', "Param").value();
     unsigned int maxGenAG = parser.createParam((unsigned int)(100), "maxGenAG", "Nombre max d'AG", 'M', "Param").value();
     unsigned int increaseObj = parser.createParam((unsigned int)(5), "increaseObj", "Nombre Objectif de gain fitness par AG", 'O', "Param").value();
@@ -47,11 +49,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     std::string user = "M.MORAUD & A.WATERS";
 
     // creation des fichiers de suivi
-    std::string temp = "../../essai/" + ToString(tailleGen) + "_" + ToString(tailleGen) + "_" + ToString(LSactive) + "_" + ToString(nbLS) + "_" + ToString(maxGenAG) + "_" + ToString(strategieInit) + "_" + ToString(nbLigneMut) + "_" + ToString(tauxCross) + "_" + ToString(tauxSwap);
+    std::string temp = "../../essai/" + ToString(tailleGen) + "_" + ToString(increaseObj) + "_" + ToString(LSactive) + "_" + ToString(LS2active) + "_" + ToString(nbLS) + "_" + ToString(maxGenAG) + "_" + ToString(strategieInit) + "_" + ToString(nbLigneMut) + "_" + ToString(tauxCross) + "_" + ToString(tauxSwap);
     char buffer [80];
     strcpy(buffer, temp.c_str());
-    std::string folderName = buffer;
     mkdir(buffer,0777);
+    char buffer2[10];
+    std::string temp2 = temp + "/" + ToString(run);
+    strcpy(buffer2, temp2.c_str());
+    mkdir(buffer2,0777);
+    std::string folderName = buffer2;
     std:: string templogName = folderName + "/log.log";
     std:: string tempmapName = folderName + "/map.txt";
     std::string tempinfoName = folderName + "/info.txt";
@@ -75,6 +81,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
 
     //init local search
     localSearch ls(problem,0);
+    localSearch ls2(problem, 1);
 
     //selection des strats d'AG
     //swapRotate mut(problem);
@@ -141,6 +148,12 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
         pop.push_back(s);
 
 
+    }
+
+    if (LS2active) {
+        for (int j = 0; j < tailleGen; ++j) {
+            ls2(pop[j]);
+        }
     }
 
     if (Debug) {
