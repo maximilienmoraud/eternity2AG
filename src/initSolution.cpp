@@ -8,6 +8,7 @@ void initSolution::setStrategie(unsigned int _strategie){
     strategie=_strategie;
 }
 
+//fonctions qui permettent de définir la stratégie à utiliser
 void initSolution::operator()(Solution & _sol){
     if(strategie==0)
         initAleatoire(_sol);
@@ -23,6 +24,7 @@ void initSolution::operator()(Solution & _sol){
 
 }
 
+//stratégie 0 : initialisation aléatoire du puzzle, on place les pièces à la suite selon leur type (coin,contour,centre)
 void initSolution::initAleatoire(Solution& _sol){
     //std::cout << "Strategie Aleatoire" << std::endl;
     unsigned int l=problem.taille.first;
@@ -116,11 +118,13 @@ void initSolution::initAleatoire(Solution& _sol){
     }
 }
 
-//fonction random
+//Fonction qui retourne un ramdom entre 0 et i
 int myrandomINIT (int i) {
     return std::rand()%i;
 }
 
+//Fonction d'initialisation Glouton : permet de faire une init intelligente en placant les pièces une à une
+// selon leur correspondance avec les pièces déjà placées et qui l'entourent
 void initSolution::initGlouton(Solution& _sol){
 
 
@@ -131,7 +135,7 @@ void initSolution::initGlouton(Solution& _sol){
     unsigned int lastColor=0;
 
 
-    //on cree un mix de l'ordre de parcours des differentes pieces
+    //Initialisation des tableau qui permettront d'obtenir un ordre différent des pièces pour l'initialisation
     std::vector<unsigned int> coinsPermutation;
     std::vector<unsigned int> bordsPermutation;
     std::vector<unsigned int> centresPermutation;
@@ -329,6 +333,7 @@ void initSolution::initGlouton(Solution& _sol){
             for (int c = 0; c < centresPermutation.size(); ++c) {
                 //on cherche si une solution est "optimale" en fonction de toutes les rotations possibles
                 for (int j = 0; j < 4; ++j) {
+                    //On compare en premier à la pièce de gauche
                     if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                         if (correspondingSide < 1){
                             correspondingSide = 1;
@@ -347,6 +352,7 @@ void initSolution::initGlouton(Solution& _sol){
                         else {
                             ++j;
                         }
+                        //On compare à la pièce du haut
                         if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                             if (correspondingSide < 2){
                                 correspondingSide = 2;
@@ -363,6 +369,7 @@ void initSolution::initGlouton(Solution& _sol){
                             else {
                                 ++j;
                             }
+                            //on compare à la pièce du bas
                             if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                                 correspondingSide = 3;
                                 rotationNeeded = 3-j;
@@ -383,6 +390,7 @@ void initSolution::initGlouton(Solution& _sol){
 }
 
 //fonction de backtracking construction du contour
+//Fonction qui permet l'initalisation d'un contour certifié sans erreurs
 void BTtour(Solution& _sol, std::vector<unsigned int> coinsPermutation, std::vector<unsigned int> bordsPermutation, Problem problem, unsigned int lastColor=0, unsigned int i = 0){
     unsigned int l=problem.taille.first;
     unsigned int h=problem.taille.second;
@@ -530,6 +538,7 @@ void BTtour(Solution& _sol, std::vector<unsigned int> coinsPermutation, std::vec
     }
 }
 
+//Fonction avec le même principe Glouton avec une contour certifié sans erreurs
 // meme algo que le precedent sauf que le contour est generé avec le back tracking
 void initSolution::initGloutonBis(Solution& _sol){
     //std::cout << "Strategie Glouton" << std::endl;
@@ -651,7 +660,10 @@ void initSolution::initEscargot(Solution& _sol){
     unsigned int l=problem.taille.first;
     unsigned int h=problem.taille.second;
     evalSolution eval(problem);
+    _sol.resize(l * h);
 
+    //Initialisation des tableaux qui peremttront d'obtenir un ordre différent de l'apparition des pièce du puzzle
+    //à chaque fois
     std::vector<unsigned int> coinsPermutation;
     std::vector<unsigned int> bordsPermutation;
     std::vector<unsigned int> centresPermutation;
@@ -675,18 +687,19 @@ void initSolution::initEscargot(Solution& _sol){
     //for(unsigned int i=0; i<(h-2)*(l-2); i++)
     //std::cout << centresPermutation[i] << std::endl;
 
-    _sol.resize(l * h);
 
+    //Initialisation du contour sans erreur
     BTtour(_sol, coinsPermutation, bordsPermutation, problem);
 
-    //Remplir les centre en suivant la méthode de l'escargot
+    //Remplir le centre en suivant la méthode de l'escargot
     int x = l; // permet de connaitre l'emplacement de la dernière pièce placée sur le puzzle
-    int increm = 1; //permet de géréer l'incrémentation des calculs
+    int increm = 1; //permet de géréer l'incrémentation des calculs de position
     int total_p = h*l-2*(h+l-2); //permet de connaitre le nombre de pièce qu'il reste à placer
     int cas = 1; //permet de connaitre quel coté on est entrain de remplir : ligne du haut : 1, colonne de droite : 2, ligne du bas : 3, colonne de gauche : 4
 
     while(total_p >0 ){
 
+        //cas(1) de la ligne du haut
         if (cas==1){
             for(int i=x+1; i <= (l-1)*(1+increm) ; i++){ //Parcours de la ligne du haut
                 unsigned int correspondingSide = 0;
@@ -696,34 +709,31 @@ void initSolution::initEscargot(Solution& _sol){
                 for (int c = 0; c < centresPermutation.size(); ++c) { //parcours des indices des centres
                     for (int j = 0; j < 4; ++j) { //parcours de toutes les couleurs d'une pièce
 
-                        //On verrifie de gauche
+                        //On verrifie la picèe de gauche
                         if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                             if (correspondingSide < 1){
                                 correspondingSide = 1;
-                                if (1-j == -1){ //j=2
+                                if (j == 2){ //j=2
                                     rotationNeeded = 3;
-                                }else if (1-j == -2){ //j=3
-                                    rotationNeeded = 2;
-                                }else{ //j = 0 ou 1
-                                    rotationNeeded = 1-j;  //1 ou 0
+                                }else{ //j = 0 ou 1 ou 3
+                                    rotationNeeded = abs(1-j);  //1 ou 0 ou 2
                                 }
                                 indexBestPiece = c;
                             }
                             ++j; // +1 à j
 
-                            //comparaison à la pièce du dessus
+                            //ON verrifie la  pièce du dessus
                             if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide < 2){
                                     correspondingSide = 2;
                                     if (j == 3){ //j=3
                                         rotationNeeded = 3;
-                                    } else if(j==4){
-                                        rotationNeeded=2;
                                     }else{
-                                        rotationNeeded = 2-j;
+                                        rotationNeeded = abs(2-j);
                                     }
                                     indexBestPiece = c;
                                 }
+                                //Si la prochaine pièce n'existe pas on peut s'arrêter
                                 if(_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==0){
                                     break;
                                 }
@@ -734,15 +744,16 @@ void initSolution::initEscargot(Solution& _sol){
                                     ++j;
                                 }
 
-                                //on regarde la pièce à la droite
+                                //On verrifie la pièce de droite
                                 if ( _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
                                     rotationNeeded = 3-(j%4);
                                     indexBestPiece = c;
                                     break;
                                 }
+                                //permet de ne plus retourner dans la boucle
                                 if (j==0){
-                                    j=4;
+                                    break;
                                 }
                             }
                         }
@@ -755,8 +766,10 @@ void initSolution::initEscargot(Solution& _sol){
                 x=i; //changer la valeur de x
                 total_p --; // ajout d'une pièce donc décrémenter le total
             }
-            cas=2;
+            cas=2; //on passe au cas suivant
         }
+
+            //cas(2) de la colonne de droite
         else if (cas==2){
             for(int i=x+l; i<= (l*h-1)-increm*(1+l) ; i=i+l){ //parcours colonne de droite
                 unsigned int correspondingSide = 0;
@@ -771,7 +784,7 @@ void initSolution::initEscargot(Solution& _sol){
                         if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]!=0 && _sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j]){
                             if (correspondingSide < 1) {
                                 correspondingSide = 1;
-                                if (2 - j == -1) { //j=3
+                                if (j == 3) { //j=3
                                     rotationNeeded = 3;
                                 } else {
                                     rotationNeeded = 2 - j;
@@ -779,13 +792,14 @@ void initSolution::initEscargot(Solution& _sol){
                                 indexBestPiece = c;
                             }
                             ++j; // +1 à j
-                            //comparaison à la pièce de droite
+                            //On verrifie la pièce de droite
                             if (_sol[i+1].couleur[(5-_sol[i+1].rotation)%4]!=0 && _sol[i+1].couleur[(5-_sol[i+1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide<2){
                                     correspondingSide=2;
                                     rotationNeeded = 3-(j%4);
                                     indexBestPiece = c;
                                 }
+                                //Si la piece du bas est vide, on peut s'arreter ici
                                 if(_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==0){
                                     break;
                                 }
@@ -795,19 +809,20 @@ void initSolution::initEscargot(Solution& _sol){
                                 else {
                                     ++j;
                                 }
-                                //on regarde la pièce du bas
+                                //On verrifie la pièce du bas
                                 if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
                                     if (j == 0 ) { //j=0
                                         rotationNeeded = 0;
-                                    } else { //j = 1 ou 2 ou 3
+                                    } else { //j = 1 ou 2 ou 3 ou 4
                                         rotationNeeded = 4 - j;  //2 ou 3 ou 1 ou 4 (4-4 =0 revient bien au cas j=0)
                                     }
                                     indexBestPiece = c;
                                     break;
                                 }
+                                //On à terminé la boucle
                                 if (j==0){
-                                    j=4;
+                                    break;
                                 }
                             }
                         }
@@ -823,6 +838,8 @@ void initSolution::initEscargot(Solution& _sol){
             }
             cas=3;
         }
+
+            //cas(3) de la ligne du bas
         else if (cas==3){
             for(int i=x-1; i >= (l*h)-l-increm*(l-1) ; i--){ //parcours ligne du bas
                 unsigned int correspondingSide = 0;
@@ -830,7 +847,6 @@ void initSolution::initEscargot(Solution& _sol){
                 unsigned int indexBestPiece = 0;
 
                 for (int c = 0; c < centresPermutation.size(); ++c) { //parcours des indices des centres
-
                     for (int j = 0; j < 4; ++j) { //parcours de toutes les couleurs d'une pièce
 
                         //On verrifie la pièce de droite
@@ -842,17 +858,18 @@ void initSolution::initEscargot(Solution& _sol){
                             }
                             ++j; // +1 à j
 
-                            //comparaison à la pièce de bas
+                            //On verrifie la pièce de bas
                             if (_sol[i+l].couleur[(6-_sol[i+l].rotation)%4]!=0 && _sol[i+l].couleur[(6-_sol[i+l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if(correspondingSide<2){
                                     correspondingSide = 2;
                                     if (j == 0) { //j=0
                                         rotationNeeded = 0;
-                                    } else { //j = 1 ou 2 ou 3
+                                    } else { //j = 1 ou 2 ou 3 ou 4
                                         rotationNeeded = 4 - j;  //2 ou 3 ou 1
                                     }
                                     indexBestPiece = c;
                                 }
+                                //Si la pièce de gauche est vide on peut s'arrêter la
                                 if(_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==0){
                                     break;
                                 }
@@ -863,23 +880,22 @@ void initSolution::initEscargot(Solution& _sol){
                                     ++j;
                                 }
 
-                                //on regarde la pièce de gauche
+                                //On verrifie la pièce de gauche
                                 if ( _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
 
                                     if (j == 2){ //j=2
                                         rotationNeeded = 3;
-                                    }else if (j == 3){ //j=3
-                                        rotationNeeded = 2;
-                                    }else{ //j = 0 ou 1
-                                        rotationNeeded = 1-(j%4);  //1 ou 0
+                                    }else{ //j = 0 ou 1 ou 3 ou 4
+                                        rotationNeeded = abs (1-(j%4));  //1 ou 0
                                     }
                                     indexBestPiece = c;
                                     break;
 
                                 }
+                                //On termine la boucle
                                 if (j==0){
-                                    j=4;
+                                    break;
                                 }
                             }
                         }
@@ -895,6 +911,8 @@ void initSolution::initEscargot(Solution& _sol){
             }
             cas=4;
         }
+
+            //cas(4) de la colonne de gauche
         else {
             for(int i=x-l; i >= l+increm*(l+1) ; i=i-l){ //parcours colonne de gauche
                 unsigned int correspondingSide = 0;
@@ -916,27 +934,24 @@ void initSolution::initEscargot(Solution& _sol){
                                 }
                                 indexBestPiece = c;
                             }
-                            if(j==4){// +1 à j
-                                j=0;
-                            } else{
-                                j++;
-                            }
-                            //comparaison à la pièce de gauche
+                            j++;
+
+                            //On verrifie la pièce de gauche
                             if (_sol[i-1].couleur[(3-_sol[i-1].rotation)%4]!=0 && _sol[i-1].couleur[(3-_sol[i-1].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                 if (correspondingSide <2){
                                     correspondingSide = 2;
                                     if (j == 2){ //j=2
                                         rotationNeeded = 3;
-                                    }else if (j == 3){ //j=3
-                                        rotationNeeded = 2;
-                                    }else{ //j = 0 ou 1
-                                        rotationNeeded = 1-(j%4);  //1 ou 0
+                                    }else{ //j = 0 ou 1 ou 3 ou 4
+                                        rotationNeeded = 1-(j%4);  //1 ou 0 ou 2
                                     }
                                     indexBestPiece = c;
                                 }
+                                //Si la pice du haut est vite on peut arrêter ici
                                 if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==0){
                                     break;
                                 }
+
                                 if (j==4){
                                     j=0;
                                 }
@@ -944,7 +959,7 @@ void initSolution::initEscargot(Solution& _sol){
                                     ++j;
                                 }
 
-                                //on regarde la pièce du haut
+                                //On verrifie la pièce du haut
                                 if (_sol[i-l].couleur[(4-_sol[i-l].rotation)%4]==problem.centres[centresPermutation[c]].couleur[j%4]){
                                     correspondingSide = 3;
                                     if (j == 3){ //j=3
@@ -956,8 +971,9 @@ void initSolution::initEscargot(Solution& _sol){
                                     break;
 
                                 }
+                                //on termone la boucle
                                 if (j==0){
-                                    j=4;
+                                    break;
                                 }
                             }
                         }
@@ -977,6 +993,7 @@ void initSolution::initEscargot(Solution& _sol){
 
     } //fin du while
 
+    //Test si il n'y a pas de duplication
     std::vector<unsigned int> testID;
     for(unsigned int i=0; i<l*h; i++) {
         if (std::find(testID.begin(), testID.end(), _sol[i].id) != testID.end()){

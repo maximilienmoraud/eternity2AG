@@ -2,7 +2,7 @@
 #include "evalSolution.h"
 
 evalSolution::evalSolution(Problem & _problem): problem(_problem){}
-
+//Fonction qui permet d'évaluer une solution
 void evalSolution::operator()(Solution & _sol){
 	double fit=0;
 

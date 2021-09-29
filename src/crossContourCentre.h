@@ -7,6 +7,7 @@ class crossContourCentre: public eoQuadOp<Solution>
 {
  public:
 
+    //inverse les deux contours de deux solutions
 	crossContourCentre(Problem& _problem):problem(_problem){}
 
 	bool operator()(Solution& _sol1, Solution& _sol2){

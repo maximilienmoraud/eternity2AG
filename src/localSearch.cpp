@@ -101,7 +101,7 @@ void localSearch::stratOne(Solution & _sol) {
 
 }
 
-// recherche de la meilleur rotation pour chque piece deja placé
+// Recherche de la meilleure rotation pour chacune des pièces du puzzle
 void localSearch::stratTwo(Solution & _sol) {
 
     unsigned int l = problem.taille.first;
@@ -109,26 +109,27 @@ void localSearch::stratTwo(Solution & _sol) {
     double bestFit; //permet de verrifier si la fitness évolue
     int j = 0;
 
-    evalSolution eval(problem); //???
-
+    evalSolution eval(problem);
     unsigned int bestRotation = 0;
-
     _sol.resize(l * h);
 
+    //Parcours de toutes les pièces du centre du puzzle
     for (unsigned int i = l + 1; i < h * l - 1 -l; i++) {
+        if (i % l != 0 && (i + 1) % l != 0) { //on enlève les pièces qui sont sur les extrémintés
 
-        //on enlève les pièces qui font parti du contour
-        if (i % l != 0 && (i + 1) % l != 0) {
+            //on initialise les valeurs par rapport à la position initiale de la pièce
             eval(_sol);
             bestFit = _sol.fitness(); //on renseigne les paramètres initiaux avant modification
             bestRotation = _sol[i].rotation;
             j = 0;
-            for(j=0;j<4;j++) {
+
+            // Test pour savoir si une meilleure rotation existe
+            for(j=0;j<4;j++) {    //on test toutes les rotations possibles
                 _sol[i].rotation = j ; //nouvelle rotation
                 eval(_sol);
-                if (bestFit < _sol.fitness()) { //retour à l'initial
+                if (bestFit < _sol.fitness()) { //retour à l'initial parce que le score est moins bon
                     _sol[i].rotation = bestRotation;
-                } else if (bestFit > _sol.fitness()){ //nouveaux paramètres
+                } else if (bestFit > _sol.fitness()){ //nouveaux paramètres car le score est meilleur
                     bestRotation = _sol[i].rotation;
                     bestFit =_sol.fitness();
                 }
