@@ -72,7 +72,6 @@ add_definitions(-DDEPRECATED_MESSAGES)
 ADD_SUBDIRECTORY(application)
 ADD_SUBDIRECTORY(doc)
 ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(test)
 
 
 ######################################################################################
