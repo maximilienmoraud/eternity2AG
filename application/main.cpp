@@ -45,7 +45,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv){
     unsigned int nbLigneMut = parser.createParam((unsigned int)(3), "nbLigneMut", "Nombre de ligne affecté par la mutation", 'k', "Param").value();
     float tauxCross = parser.createParam((float)(0.5), "tauxCross", "Taux de cross", 'm', "Param").value();
     float tauxSwap = parser.createParam((float)(0.5), "tauxSwap", "Taux de swap", 's', "Param").value();
-    std::string user = "M.MORAUD & A.WATERS";
+    std::string user = "M.MORAUD & A.WAUTERS";
 
     // creation des fichiers de suivi
     std::string temp = "../../essai/" + ToString(tailleGen) + "_" + ToString(increaseObj) + "_" + ToString(LSactive) + "_" + ToString(LS2active) + "_" + ToString(nbLS) + "_" + ToString(maxGenAG) + "_" + ToString(strategieInit) + "_" + ToString(nbLigneMut) + "_" + ToString(tauxCross) + "_" + ToString(tauxSwap);
