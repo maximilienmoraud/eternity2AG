@@ -1,10 +1,11 @@
 Explain how to use your package.
 
 ## Introduction
-    Ce projet permet de donner des méthodes de résolution du puzzle EternityII composé de 256 pièces.
-    Puzzle étudié pour être extrêmement difficile, au point que son éditeur offre 2 millions de dollars
-    au premier qui parviendra à placer correctement ses 256 pièces carrées de façon à ce que les côtése chacune
-    correspondent à ceux de ses 4 voisins.
+
+Ce projet permet de donner des méthodes de résolution du puzzle EternityII composé de 256 pièces.
+Puzzle étudié pour être extrêmement difficile, au point que son éditeur offre 2 millions de dollars
+au premier qui parviendra à placer correctement ses 256 pièces carrées de façon à ce que les côtése chacune
+correspondent à ceux de ses 4 voisins.
 
 
 ## Prérequis
