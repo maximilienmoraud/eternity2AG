@@ -17,7 +17,8 @@ Afin de pouvoir exécuter le code sur votre poste, vous devez télécharger :
 ### Installation
 #### ParadisEO
   1. Télécharger la version selon l'environnement utilisé : http://paradiseo.gforge.inria.fr/index.php?n=Download.Download
-  2. Suivre les étapes d'installation en laissant les options par défaut.
+  2. Choisir comme dossier d'installation le même dossier que celui ou se trouvera erternity2AG
+  3. Suivre les étapes d'installation en laissant les options par défaut.
 
 ### Pour Windows
   1. Ne pas oublier de télécharger les outils (tools package)
